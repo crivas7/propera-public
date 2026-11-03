@@ -14,13 +14,20 @@ The MCP server is hosted publicly over HTTPS. **Publicly reachable does not mean
 
 ## Currently supported core tools
 
-The production MCP implementation contains these core operations. The set returned by `tools/list` can differ according to the server's feature flags; optional financing tools are **not enabled by default**.
+The production MCP implementation contains these core operations. The set returned by `tools/list` depends on the authenticated OAuth client, the granted scopes, and server-side feature flags; optional financing tools are **not enabled by default**.
 
 | MCP tool | OAuth scope | Behavior |
 | --- | --- | --- |
 | `get_financial_state` | `propera:read` | Returns the authenticated user's current balance, protected amount, saved amount, available amount and reporting currency. |
 | `get_pending_planned_payments` | `propera:read` | Returns existing pending planned payments, including overdue and future-dated records, their amounts, due dates and recurrence metadata. It is **not a forecast** of uncreated future payments. |
 | `propose_movement` | `propera:write` | Creates a structured **draft income or expense proposal**, pending subsequent review and confirmation inside Propera. Does **not** post a financial movement directly. |
+
+### Client-specific tool availability
+
+- **Claude and ChatGPT:** the three core tools above are available, subject to authentication, scopes, and server configuration.
+- **Muse:** the server restricts its verified OAuth client (`client_id=muse`) to `get_financial_state` and `propose_movement`. `get_pending_planned_payments` and optional financing tools are not registered for Muse; direct calls to those unregistered tools are rejected.
+
+The client identity comes from a validated OAuth access token, not from untrusted request headers or MCP tool arguments. Always refer to the authenticated session's `tools/list` response for the definitive catalog.
 
 ### Example user requests
 
@@ -52,18 +59,19 @@ The backend also contains optional tools for consulting and previewing voluntary
 
 ### OAuth technical reference
 
-The server uses OAuth authorization code flow with **PKCE S256** and supports refresh tokens. Standard metadata is published by the API:
+The server uses OAuth authorization code flow with **PKCE S256** and supports refresh tokens. Standard metadata is published by the API. OAuth issuer and audience identifiers are determined by the server configuration and should be read from the live metadata rather than inferred from the public hostname:
 
 - Authorization server metadata: [`https://api.propera.life/.well-known/oauth-authorization-server`](https://api.propera.life/.well-known/oauth-authorization-server)
 - Protected resource metadata: [`https://api.propera.life/.well-known/oauth-protected-resource`](https://api.propera.life/.well-known/oauth-protected-resource)
-- Authorization UI: [`https://propera.life/oauth/authorize`](https://propera.life/oauth/authorize)
+- Authorization UI: [`https://api.propera.life/oauth/authorize`](https://api.propera.life/oauth/authorize)
+- Resource-specific protected metadata: [`https://api.propera.life/.well-known/oauth-protected-resource/mcp`](https://api.propera.life/.well-known/oauth-protected-resource/mcp)
 
 Supported scopes:
 
 - `propera:read` — read authorized financial information.
 - `propera:write` — create draft proposals (and only additional operations expressly enabled by server configuration and permissions).
 
-OAuth clients and redirect URIs must be registered/accepted by the server. The endpoint URL alone does not grant access to financial data. A new assistant platform may require additional client registration or compatibility testing.
+OAuth clients and redirect URIs must be registered/accepted by the server. The endpoint URL alone does not grant access to financial data. A new assistant platform may require additional client registration or compatibility testing. For compatibility with existing integrations, the token issuer may differ from the public API hostname; clients should follow the published metadata instead of constructing issuer or token URLs themselves.
 
 ## Permissions, privacy and safety
 
@@ -88,10 +96,10 @@ OAuth clients and redirect URIs must be registered/accepted by the server. The e
 
 - Product: https://propera.life
 - MCP endpoint: https://api.propera.life/mcp
-- OAuth authorization: https://propera.life/oauth/authorize
+- OAuth authorization: https://api.propera.life/oauth/authorize
 
 For support and privacy or legal information, use the links and contact options published on [propera.life](https://propera.life).
 
 ---
 
-*Documentation reflects the MCP implementation reviewed on 1 November 2026. The tool catalog and platform availability may evolve independently of this document.*
+*Documentation updated on 3 November 2026 to reflect the OAuth discovery and client-specific tool-isolation changes. The tool catalog and platform availability may evolve independently of this document.*
