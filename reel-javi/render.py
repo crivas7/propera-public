@@ -55,7 +55,7 @@ def placeholder_bg(t):
         d.text(((W - w) / 2, 1430 + i * 44 - 44), s, font=f, fill=(140, 120, 190))
     return im
 
-BGF = sorted(os.listdir("work/bg")) if os.path.isdir("work/bg") else []
+BGF = sorted(os.listdir("work/bg"))
 def video_bg(t):
     i = min(int(t * FPS), len(BGF) - 1)
     return Image.open("work/bg/" + BGF[i]).convert("RGB")
@@ -108,7 +108,7 @@ def status_bar(d, dark=False):
     rrect(d, (450, 34, 488, 52), 5, outline=c, width=2)
     d.rectangle((454, 38, 480, 48), fill=c)
 
-LOGO_S = Image.open("assets/logo_small.png").convert("RGB")
+LOGO_S = Image.open("work/logo_small.png").convert("RGB")
 
 def wrap(d, text, font, width):
     out = []
@@ -134,7 +134,7 @@ def chat_screen(t):
     status_bar(d)
     # header
     hf = I("SemiBold", 26)
-    title = "Asistente IA"
+    title = "ChatGPT"
     d.text(((SW - d.textlength(title, font=hf)) / 2, 84), title, font=hf, fill=(20, 20, 25))
     chip = "Propera conectado"
     cf = I("Medium", 19)
@@ -148,7 +148,7 @@ def chat_screen(t):
 
     # input bar
     rrect(d, (24, SH - 110, SW - 24, SH - 42), 34, fill=(244, 244, 246))
-    typing_end = 0.6 + len(USER_Q) * 0.05
+    typing_end = 0.6 + len(USER_Q) * 0.035
     sent = t > typing_end + 0.15
     if not sent:
         n = int(clamp((t - 0.6) / (typing_end - 0.6)) * len(USER_Q))
@@ -181,7 +181,7 @@ def chat_screen(t):
             d.text((SW - 24 - bw + 22, yy + 14 + i * 32), l, font=f, fill=(20, 20, 25))
         y += bh + 34
         tc = typing_end + 0.5
-        ans_start = tc + 1.6
+        ans_start = tc + 0.9
         if t > tc:
             # tool call chip
             f2 = I("Medium", 20)
@@ -196,7 +196,7 @@ def chat_screen(t):
             f3 = I("Regular", 23)
             fb = I("SemiBold", 23)
             words_total = len(ANSWER.replace("\n", " \n ").split(" "))
-            nshow = int((t - ans_start) * 11)
+            nshow = int((t - ans_start) * 16)
             shown = 0
             for para in ANSWER.split("\n"):
                 for l in wrap(d, para, f3, SW - 60):
@@ -207,6 +207,9 @@ def chat_screen(t):
                         bold = any(k in w for k in ["210", "120"]) or w in ("€",) and False
                         ft = fb if bold else f3
                         col = (110, 60, 210) if bold else (25, 25, 30)
+                        if bold:
+                            tw = d.textlength(w, font=ft)
+                            d.rounded_rectangle((x - 5, y - 1, x + tw + 5, y + 31), 7, fill=(233, 222, 255))
                         d.text((x, y), w, font=ft, fill=col)
                         x += d.textlength(w + " ", font=ft)
                         shown += 1
@@ -260,7 +263,7 @@ def propera_screen(t):
     d.text((108, SH - 88), "Cuéntale a Propera qué pasó", font=I("Regular", 20), fill=(150, 145, 165))
     return s
 
-END = Image.open("assets/end.png").convert("RGB")
+END = Image.open("frames/end.png").convert("RGB")
 
 # ---------- scenes ----------
 def s1(t):
