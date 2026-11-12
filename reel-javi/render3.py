@@ -16,17 +16,16 @@ PANEL_Y = 560
 _pm = Image.new('L', (1080, 568), 0)
 ImageDraw.Draw(_pm).rounded_rectangle((0, 0, 1079, 567), 36, fill=255)
 
+import render2 as R2
+C1 = sorted(os.listdir('work/c1g'))
 def store(t):
-    im = fr('work/b1', B1, t)
-    p = fr('work/p1', P1, t)
-    im.paste(p, (0, PANEL_Y), _pm)
-    return im
+    return R2.darken_top(fr('work/c1g', C1, t))
 
 # ---- scenes ----
 def s1(t):  # hook
     im = store(t)
     R.headline(im, [("Mi banco dice 640 €.", R.WHITE)], 260, t, 82, start=0.15)
-    R.headline(im, [("Spoiler: no es", R.PURPLE), ("lo que tengo.", R.PURPLE)], 1210, t, 82, start=3.1)
+    R.headline(im, [("Spoiler: no es", R.PURPLE), ("lo que tengo.", R.PURPLE)], 365, t, 82, start=3.1)
     return im
 
 def s2(t):  # price
@@ -35,7 +34,7 @@ def s2(t):  # price
     d = ImageDraw.Draw(im, 'RGBA')
     p = R.ease((t - 1.1) / 0.35)
     if p > 0:
-        tw, th = 420, 170; x0 = (W - tw) / 2; y0 = 1040 + (1 - p) * 50
+        tw, th = 420, 170; x0 = (W - tw) / 2; y0 = 1120 + (1 - p) * 50
         sc = 1 + 0.08 * (1 - R.ease((t - 1.1) / 0.5))
         R.rrect(d, (x0, y0, x0 + tw, y0 + th), 28, fill=(255, 255, 255, int(248 * p)))
         pf = R.F(R.POP, int(90 * sc)); s = "89,99 €"
