@@ -4,12 +4,13 @@ from PIL import Image, ImageDraw
 import render as R
 
 W, H, FPS = 1080, 1920, 30
-DUR = 28.0
+DUR = 30.3
 P1 = sorted(os.listdir('work/p1')); B1 = sorted(os.listdir('work/b1')); C2 = sorted(os.listdir('work/c2g'))
 def fr(folder, files, t):
     return Image.open(f'{folder}/' + files[max(0, min(int(t * FPS), len(files) - 1))]).convert('RGB')
 
 DARKTXT = (25, 18, 50); PURP_D = (110, 60, 210)
+S4_SECOND = 3.4
 
 # rounded mask for the store panel
 PANEL_Y = 560
@@ -41,7 +42,7 @@ def s2(t):  # price
         d.text(((W - d.textlength(s, font=pf)) / 2, y0 + 26), s, font=pf, fill=DARKTXT + (int(255 * p),))
     return im
 
-ZOOM_AT = 6.3
+ZOOM_AT = 6.7
 def s3(t):  # chat
     im = fr('work/c2g', C2, t)
     pin = R.ease(t / 0.45)
@@ -54,26 +55,19 @@ def s3(t):  # chat
     return im
 
 def s4(t):  # numbers
-    im = fr('work/c2g', C2, t + 8.85)
-    d = ImageDraw.Draw(im, 'RGBA')
-    f = R.F(R.POP, 74); l1 = "640 € en el banco."
-    p = R.ease(t / 0.4); w = d.textlength(l1, font=f)
-    d.text(((W - w) / 2, 130 + (1 - p) * 40), l1, font=f, fill=DARKTXT + (int(255 * p),))
-    sp = R.ease((t - 0.9) / 0.45)
-    if sp > 0:
-        y = 130 + 54
-        d.line(((W - w) / 2 - 10, y, (W - w) / 2 - 10 + (w + 20) * sp, y), fill=PURP_D, width=9)
-    R.headline(im, [("210 € de verdad.", PURP_D)], 225, t, 82, start=1.3)
+    im = fr('work/c2g', C2, t + 7.75)
+    R.headline(im, [("210 € para 17 días", DARKTXT)], 120, t, 72, start=0.0)
+    R.headline(im, [("De 12 €/día a 7 €/día", PURP_D)], 215, t, 76, start=S4_SECOND)
     R.paste_phone(im, R.phone(R.propera_screen(max(0, t - 0.3)), 1.0), W / 2, 380)
     return im
 
 def s5(t):  # end + CTA
     im = R.END.copy()
-    R.headline(im, [("Pruébalo gratis, sin tarjeta", R.WHITE)], 1400, t, 56, start=0.9)
-    R.headline(im, [("Link en la bio", R.PURPLE)], 1478, t, 56, start=2.4)
+    R.headline(im, [("Pruébalo gratis, sin tarjeta", R.WHITE)], 1400, t, 56, start=1.1)
+    R.headline(im, [("Link en la bio", R.PURPLE)], 1478, t, 56, start=2.9)
     return im
 
-R.SCENES[:] = [(0.0, 5.3, s1), (5.3, 9.25, s2), (9.25, 18.1, s3), (18.1, 23.5, s4), (23.5, DUR, s5)]
+R.SCENES[:] = [(0.0, 5.3, s1), (5.3, 9.25, s2), (9.25, 17.0, s3), (17.0, 25.9, s4), (25.9, DUR, s5)]
 
 if __name__ == '__main__':
     out = sys.argv[1]; os.makedirs(out, exist_ok=True)

@@ -125,7 +125,7 @@ def wrap(d, text, font, width):
 USER_Q = "¿Me puedo comprar unas zapatillas de 90 €?"
 ANSWER = ("Tienes 640 € en el banco, pero 430 € ya están comprometidos: alquiler, luz y gimnasio.\n"
           "Tu disponible real es de 210 € hasta que cobres el día 28.\n"
-          "Puedes comprarlas, pero te quedarían 120 € para 17 días.")
+          "Si las compras, te quedarían 120 € para 17 días: unos 7 € al día.")
 
 def chat_screen(t):
     """t local seconds within the chat scene."""
@@ -204,7 +204,7 @@ def chat_screen(t):
                     x = 26
                     for w in ws:
                         if shown >= nshow: break
-                        bold = any(k in w for k in ["210", "120"]) or w in ("€",) and False
+                        bold = any(k in w for k in ["210", "120"]) or w.startswith("7 ")
                         ft = fb if bold else f3
                         col = (110, 60, 210) if bold else (25, 25, 30)
                         if bold:

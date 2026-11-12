@@ -6,11 +6,11 @@ CUES = [
  (5.45, 7.7, "Quería estas zapatillas. Noventa euros."),
  (7.7, 9.1, "¿Me las puedo permitir?"),
  (9.4, 12.15, "Se lo pregunto a ChatGPT, que tiene Propera conectado."),
- (12.45, 13.3, "Y me lo dice claro:"),
- (13.6, 16.2, "430 € ya están comprometidos."),
- (16.2, 18.0, "Alquiler, luz, gimnasio."),
- (18.3, 20.9, "Lo que tengo de verdad son 210 €."),
- (21.2, 23.4, "Hoy no. El mes que viene, sin agobios."),
+ (12.45, 15.05, "430 € ya están comprometidos."),
+ (15.05, 16.85, "Alquiler, luz, gimnasio."),
+ (17.1, 20.1, "Me quedan 210 € para 17 días."),
+ (20.45, 22.85, "Si me las compro, me quedan 7 € al día."),
+ (23.4, 25.95, "Hoy no. El mes que viene, sin agobios."),
 ]
 f = R.F(R.POP, 50)
 src, dst = sys.argv[1], sys.argv[2]
