@@ -8,7 +8,7 @@ def I(w, s): return ImageFont.truetype(INTER % w, s)
 BG = (18, 12, 42); CARD = (28, 21, 64); BORDER = (47, 38, 99)
 WHITE = (255, 255, 255); LILA = (196, 140, 255); MUTED = (171, 164, 204); CMUT = (185, 178, 217)
 BLUE = (56, 189, 248); PINK = (244, 154, 193)
-LOGO = Image.open('/home/claude/work/headers/logo.png').convert('RGBA')
+LOGO = Image.open('/home/claude/work/headers/logo_hq.png').convert('RGBA')
 
 def render(W, H, k, lx, ly, cx, cy, cw, gap_dots, out, S=2, lema=True):
     """k = escala tipográfica; (lx,ly) bloque izq.; (cx,cy,cw) tarjeta. Dibuja a S× y reduce."""
@@ -56,9 +56,10 @@ render(1640, 624, 1.05, 210, 112, 1070, 160, 370, 30, O + 'portada_facebook_1640
 render(2560, 1440, 1.32, 560, 516, 1600, 522, 440, 40, O + 'banner_youtube_2560x1440.png')
 print('ok')
 
-# foto de perfil 400x400: fondo de marca, águila centrada con margen para el recorte circular
-av = Image.new('RGB', (800, 800), BG)
-h = 470; lg = LOGO.resize((round(h * LOGO.width / LOGO.height), h), Image.LANCZOS)
-av.paste(lg, ((800 - lg.width) // 2 + 6, (800 - h) // 2), lg)
+# foto de perfil: fondo de marca, águila centrada con margen para el recorte circular
+av = Image.new('RGB', (1600, 1600), BG)
+h = 940; lg = LOGO.resize((round(h * LOGO.width / LOGO.height), h), Image.LANCZOS)
+av.paste(lg, ((1600 - lg.width) // 2 + 12, (1600 - h) // 2), lg)
+av.resize((800, 800), Image.LANCZOS).save(O + 'foto_perfil_800x800.png', optimize=True)
 av.resize((400, 400), Image.LANCZOS).save(O + 'foto_perfil_400x400.png', optimize=True)
 print('avatar ok')
