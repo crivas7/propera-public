@@ -117,3 +117,97 @@ def scr_available(t):
         v = "99,01 €"
         d.text((SW - 44 - d.textlength(v, font=I("Bold", 27)), y + 29), v, font=I("Bold", 27), fill=(90, 40, 190))
     return s
+
+# ---------------- real composer flow ----------------
+CAP2 = dict(tap_reg=1.2, sheet=1.6, tap_plus=2.5, opts=2.9, tap_img=3.9, read=4.4, lst=6.1, hl=9.1, conf=10.2)
+NAV = [("Inicio", "home"), ("Movimientos", "mov"), ("Registrar", "plus"), ("Pagos", "cal"), ("Ahorros", "wallet")]
+def _nav(d, s, active="Inicio"):
+    y0 = SH - 118
+    d.rectangle((0, y0, SW, SH), fill=(255, 255, 255)); d.line((0, y0, SW, y0), fill=(235, 233, 242), width=2)
+    n = len(NAV); cw = SW / n
+    for k, (lab, ic) in enumerate(NAV):
+        cx = cw * k + cw / 2; cy = y0 + 40
+        col = PURP_D if lab == active else (70, 70, 85)
+        if ic == "plus":
+            R.rrect(d, (cx - 26, cy - 26, cx + 26, cy + 26), 14, fill=(120, 60, 220))
+            d.line((cx - 11, cy, cx + 11, cy), fill=(255, 255, 255), width=4); d.line((cx, cy - 11, cx, cy + 11), fill=(255, 255, 255), width=4)
+        else:
+            if lab == active: R.rrect(d, (cx - 24, cy - 22, cx + 24, cy + 22), 12, fill=(240, 233, 255))
+            if ic == "home":
+                d.polygon([(cx - 11, cy - 1), (cx, cy - 11), (cx + 11, cy - 1)], outline=col); d.rectangle((cx - 8, cy - 1, cx + 8, cy + 10), outline=col, width=2)
+            elif ic == "mov":
+                d.line((cx - 5, cy - 10, cx - 5, cy + 10), fill=col, width=2); d.line((cx + 5, cy - 10, cx + 5, cy + 10), fill=col, width=2)
+                d.polygon([(cx - 9, cy - 5), (cx - 5, cy - 11), (cx - 1, cy - 5)], fill=col); d.polygon([(cx + 1, cy + 5), (cx + 5, cy + 11), (cx + 9, cy + 5)], fill=col)
+            elif ic == "cal":
+                d.rounded_rectangle((cx - 10, cy - 9, cx + 10, cy + 10), 3, outline=col, width=2); d.line((cx - 10, cy - 3, cx + 10, cy - 3), fill=col, width=2)
+            else:
+                d.rounded_rectangle((cx - 11, cy - 8, cx + 11, cy + 9), 3, outline=col, width=2); d.rectangle((cx + 3, cy - 2, cx + 11, cy + 4), outline=col, width=2)
+        f = I("Medium" if lab == active else "Regular", 15)
+        d.text((cx - d.textlength(lab, font=f) / 2, y0 + 74), lab, font=f, fill=col)
+
+def _home(s, d):
+    R.status_bar(d)
+    s.paste(LOGO.resize((40, 48)), (28, 74))
+    d.text((74, 72), "propera", font=R.F(R.POP, 38), fill=DARKTXT)
+    d.text((32, 150), "Hola, Lucía", font=I("SemiBold", 28), fill=DARKTXT)
+    R.rrect(d, (20, 200, SW - 20, 360), 26, fill=(20, 14, 42))
+    d.text((44, 224), "Disponible real", font=I("Regular", 20), fill=(190, 185, 215))
+    d.text((44, 258), "Sin actualizar", font=I("Bold", 40), fill=(150, 145, 175))
+    d.text((44, 316), "Último movimiento: hace 12 días", font=I("Regular", 18), fill=(150, 145, 175))
+    R.rrect(d, (20, 384, SW - 20, 470), 20, fill=(255, 255, 255), outline=(230, 228, 238), width=2)
+    d.text((44, 412), "Tienes movimientos sin revisar", font=I("Medium", 21), fill=(60, 55, 80))
+
+def _composer(d, y, active=False):
+    R.rrect(d, (22, y, SW - 22, y + 70), 35, fill=(255, 255, 255), outline=(170, 110, 240), width=3)
+    d.ellipse((34, y + 11, 82, y + 59), fill=(240, 233, 255))
+    d.line((48, y + 35, 68, y + 35), fill=PURP_D, width=3); d.line((58, y + 25, 58, y + 45), fill=PURP_D, width=3)
+    d.text((98, y + 22), "Cuéntale a Propera qué pasó", font=I("Regular", 21), fill=(110, 105, 130))
+    mx = SW - 56
+    d.rounded_rectangle((mx - 7, y + 20, mx + 7, y + 40), 7, outline=PURP_D, width=2); d.arc((mx - 12, y + 28, mx + 12, y + 48), 0, 180, fill=PURP_D, width=2)
+    d.text((26, y + 82), "Por texto o voz, un movimiento cada vez.", font=I("Regular", 16), fill=(90, 88, 105))
+
+def _options(d, y, t_hl=None):
+    R.rrect(d, (22, y, SW - 22, y + 300), 22, fill=(255, 255, 255), outline=(230, 228, 238), width=2)
+    d.text((44, y + 18), "CAPTURA", font=I("SemiBold", 15), fill=(110, 105, 130))
+    bw = (SW - 44 - 16 - 36) / 2
+    def btn(x, yy, label, hl=False, pink=False):
+        R.rrect(d, (x, yy, x + bw, yy + 58), 14, fill=(240, 233, 255) if hl else (255, 255, 255), outline=(230, 228, 238), width=2)
+        d.ellipse((x + 12, yy + 15, x + 40, yy + 43), fill=(250, 232, 242) if pink else (240, 233, 255))
+        d.text((x + 52, yy + 17), label, font=I("Medium", 19), fill=(40, 35, 60))
+    x1 = 40; x2 = 40 + bw + 16
+    btn(x1, y + 44, "Tomar foto"); btn(x2, y + 44, "Elegir imagen", hl=t_hl)
+    d.text((44, y + 120), "MANUAL", font=I("SemiBold", 15), fill=(110, 105, 130))
+    btn(x1, y + 146, "Gasto"); btn(x2, y + 146, "Ingreso")
+    btn(x1, y + 216, "Pago planificado", pink=True); btn(x2, y + 216, "Ahorro", pink=True)
+    return (x2 + bw / 2, y + 73)
+
+def scr_capture2(t):
+    c = CAP2
+    if t < c['read']:
+        s = Image.new("RGB", (SW, SH), LIGHT); d = ImageDraw.Draw(s, "RGBA")
+        _home(s, d); _nav(d, s)
+        if t < c['sheet']:
+            tap(d, SW / 2, SH - 78, t, c['tap_reg'])
+            return s
+        # dim + sheet
+        p = R.ease((t - c['sheet']) / 0.35)
+        d.rectangle((0, 0, SW, SH), fill=(10, 8, 25, int(110 * p)))
+        has_opts = t >= c['opts']
+        sh_h = 640 if has_opts else 300
+        top = SH - sh_h + (1 - p) * sh_h
+        R.rrect(d, (0, top, SW, SH + 40), 30, fill=(255, 255, 255))
+        d.rounded_rectangle((SW / 2 - 30, top + 12, SW / 2 + 30, top + 18), 3, fill=(210, 208, 220))
+        d.text((26, top + 40), "Registrar", font=I("SemiBold", 27), fill=DARKTXT)
+        d.text((26, top + 80), "Añade un movimiento para revisar.", font=I("Regular", 18), fill=(90, 88, 105))
+        d.text((SW - 46, top + 42), "×", font=I("Regular", 26), fill=(110, 105, 130))
+        cy = top + 122
+        _composer(d, cy)
+        tap(d, 58, cy + 35, t, c['tap_plus'])
+        if has_opts:
+            q = R.ease((t - c['opts']) / 0.3)
+            bx, by = _options(d, cy + 118 + (1 - q) * 30, t_hl=t > c['tap_img'])
+            tap(d, bx, by + (1 - q) * 30, t, c['tap_img'])
+        return s
+    # after choosing the image: reading + detected list (reuse scr_capture layout)
+    CAP.update(tap=-10, read=c['read'], lst=c['lst'], hl=c['hl'], conf=c['conf'])
+    return scr_capture(t)

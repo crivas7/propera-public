@@ -56,7 +56,7 @@ L.CAP.update(tap=3.2, read=3.5, lst=6.1, hl=9.1, conf=10.2)
 def sC(t):  # capture with Propera
     gt = min(16.6, 10.9 + t * 0.45)
     im = soft(clip(L2, 'work/l2', gt, 'CLIP 6608790 · Lucía con el móvil'))
-    R.paste_phone(im, R.phone(L.scr_capture(t), 1.12), W / 2, 150)
+    R.paste_phone(im, R.phone(L.scr_capture2(t), 1.12), W / 2, 150)
     return im
 
 def sE(t):  # payoff, smiling
