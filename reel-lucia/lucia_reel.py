@@ -4,8 +4,8 @@ from PIL import Image, ImageDraw, ImageFilter
 import render as R, lucia_screens as L, endcard as EC
 
 W, H, FPS = 1080, 1920, 30
-DUR = 29.6
-T = dict(A=0.0, B=4.0, C=10.9, E=23.1, F=25.6)
+DUR = 32.5
+T = dict(A=0.0, B=4.0, C=10.9, E=25.4, F=28.5)
 DARKTXT = (25, 18, 50); PURP_D = (110, 60, 210)
 
 def _frames(folder):
