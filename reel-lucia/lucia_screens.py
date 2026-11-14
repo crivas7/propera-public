@@ -17,8 +17,7 @@ def tap(d, x, y, t, t0):
         d.ellipse((x - 16, y - 16, x + 16, y + 16), fill=(110, 60, 210, int(160 * (1 - k))))
 
 # generic (unbranded) bank app screen
-BANK_MOVES = [("Bizum Marta", "−22,00"), ("Glovo", "−14,90"), ("Mercadona", "−43,80"), ("Amazon", "−19,99"),
-              ("Gasolinera", "−35,00"), ("Bizum cena", "−18,00"), ("Netflix", "−17,99"), ("Gimnasio", "−25,00")]
+BANK_MOVES = [("Café · 10/11", "−3,50"), ("Farmacia · 11/11", "−12,80"), ("Cine · 12/11", "−18,00"), ("Uber · 13/11", "−9,70")]
 def scr_bank(t):
     s = Image.new("RGB", (SW, SH), (255, 255, 255)); d = ImageDraw.Draw(s, "RGBA")
     R.status_bar(d)
