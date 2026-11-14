@@ -10,10 +10,10 @@ WHITE = (255, 255, 255); LILA = (196, 140, 255); MUTED = (171, 164, 204); CMUT =
 BLUE = (56, 189, 248); PINK = (244, 154, 193)
 LOGO = Image.open('/home/claude/work/headers/logo_hq.png').convert('RGBA')
 
-def render(W, H, k, lx, ly, cx, cy, cw, gap_dots, out, S=2, lema=True):
+def render(W, H, k, lx, ly, cx, cy, cw, gap_dots, out, S=2, lema=True, kc=None, dots=True):
     """k = escala tipográfica; (lx,ly) bloque izq.; (cx,cy,cw) tarjeta. Dibuja a S× y reduce."""
     im = Image.new('RGB', (W * S, H * S), BG); d = ImageDraw.Draw(im)
-    for y in range(gap_dots // 2, H, gap_dots):
+    for y in (range(gap_dots // 2, H, gap_dots) if dots else []):
         for x in range(gap_dots // 2, W, gap_dots):
             r = 1.2 * S
             d.ellipse((x * S - r, y * S - r, x * S + r, y * S + r), fill=(38, 32, 62))
@@ -36,6 +36,7 @@ def render(W, H, k, lx, ly, cx, cy, cw, gap_dots, out, S=2, lema=True):
         d.text((s(lx), s(y)), a, font=f1, fill=MUTED)
         d.text((s(lx) + d.textlength(a, font=f1), s(y)), "propera.life", font=f2, fill=WHITE)
     # tarjeta
+    if kc: k = kc
     p = 30 * k; ch = 272 * k
     d.rounded_rectangle((s(cx), s(cy), s(cx + cw), s(cy + ch)), s(28 * k), fill=CARD, outline=BORDER, width=max(1, s(1)))
     x0, x1 = cx + p, cx + cw - p; y = cy + 30 * k
@@ -51,7 +52,7 @@ def render(W, H, k, lx, ly, cx, cy, cw, gap_dots, out, S=2, lema=True):
     im.resize((W, H), Image.LANCZOS).save(out, optimize=True)
 
 O = '/home/claude/out/'
-render(1500, 500, 1.0, 120, 62, 1010, 92, 370, 28, O + 'cabecera_x_1500x500.png', lema=False)
+render(1500, 500, 1.15, 90, 36, 985, 62, 440, 28, O + 'cabecera_x_1500x500.png', S=3, lema=False, kc=1.3, dots=False)
 render(1640, 624, 1.05, 210, 112, 1070, 160, 370, 30, O + 'portada_facebook_1640x624.png')
 render(2560, 1440, 1.32, 560, 516, 1600, 522, 440, 40, O + 'banner_youtube_2560x1440.png')
 print('ok')
