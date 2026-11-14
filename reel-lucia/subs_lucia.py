@@ -7,9 +7,11 @@ CUES = [
  (5.45, 7.9, "El banco dice 640 €…"),
  (8.25, 10.75, "…y tiene un montón de movimientos sin revisar."),
  (11.0, 12.3, "¿Apuntarlos uno a uno?"),
- (12.6, 16.65, "Ni de broma. Hace una sola captura del banco y se la pasa a Propera."),
+ (12.6, 13.4, "Ni de broma."),
+ (13.5, 16.65, "Hace una sola captura del banco y se la pasa a Propera."),
  (17.0, 19.3, "Propera saca todos los movimientos de golpe…"),
- (19.7, 22.5, "…y detecta el Netflix y el gimnasio que aún tienen que pasar."),
+ (19.7, 21.1, "…y detecta el Netflix y el gimnasio…"),
+ (21.15, 22.5, "…que aún tienen que pasar."),
  (26.6, 28.5, "Y lo ha resuelto en diez segundos."),
 ]
 f = R.F(R.POP, 50)

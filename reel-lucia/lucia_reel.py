@@ -49,14 +49,14 @@ def sB(t):  # bank, problem
     if pin > 0:
         im = Image.blend(im, soft(im), 0.85 * pin)
         R.headline(im, [("Día 20", R.WHITE)], 150, 9, 76)
-        R.paste_phone(im, R.phone(L.scr_bank(t - 0.8), 1.05), W / 2, 270 + (1 - pin) * 1200)
+        R.paste_phone(im, R.phone(L.scr_bank(t - 0.8), 0.92), W / 2, 240 + (1 - pin) * 1200)
     return im
 
 L.CAP.update(tap=3.2, read=3.5, lst=6.1, hl=9.1, conf=10.2)
 def sC(t):  # capture with Propera
     gt = min(16.6, 10.9 + t * 0.45)
     im = soft(clip(L2, 'work/l2', gt, 'CLIP 6608790 · Lucía con el móvil'))
-    R.paste_phone(im, R.phone(L.scr_capture2(t), 1.12), W / 2, 150)
+    R.paste_phone(im, R.phone(L.scr_capture2(t), 0.98), W / 2, 90)
     return im
 
 def sE(t):  # payoff, smiling
