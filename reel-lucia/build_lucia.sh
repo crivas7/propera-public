@@ -10,7 +10,7 @@ ffmpeg -v error -y -framerate 30 -i work/lfs/%04d.png -i $V -i $V2 -i $M -i work
 [1:a]atrim=0:3.33,asetpts=PTS-STARTPTS,adelay=200|200[a];\
 [2:a]atrim=0:6.58,asetpts=PTS-STARTPTS,adelay=4200|4200[b];\
 [1:a]atrim=10.70:16.36,asetpts=PTS-STARTPTS,adelay=11000|11000[c];\
-[1:a]atrim=16.95:22.47,asetpts=PTS-STARTPTS,adelay=17000|17000[d];\
+[1:a]atrim=16.95:19.30,afade=t=out:st=2.15:d=0.2,asetpts=PTS-STARTPTS,adelay=17000|17000[d];\
 [1:a]atrim=23.00:28.59,asetpts=PTS-STARTPTS,adelay=22900|22900[e];\
 [1:a]atrim=28.95:32.68,asetpts=PTS-STARTPTS,adelay=29000|29000[f];\
 [a][b][c][d][e][f]amix=inputs=6:normalize=0,apad,atrim=0:32.9,asplit[vo][sc];\
