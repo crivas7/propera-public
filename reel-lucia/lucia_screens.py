@@ -19,7 +19,7 @@ def tap(d, x, y, t, t0):
 # generic (unbranded) bank app screen
 BANK_MOVES = [("Bizum Marta", "−22,00"), ("Glovo", "−14,90"), ("Mercadona", "−43,80"), ("Café", "−3,20"),
               ("Amazon", "−19,99"), ("Gasolinera", "−35,00"), ("Bizum cena", "−18,00"), ("Farmacia", "−9,45"),
-              ("Cine", "−8,50"), ("Uber", "−11,30")]
+              ("Cine", "−8,50"), ("Netflix", "−17,99"), ("Gimnasio", "−25,00"), ("Uber", "−11,30")]
 def scr_bank(t):
     s = Image.new("RGB", (SW, SH), (255, 255, 255)); d = ImageDraw.Draw(s, "RGBA")
     R.status_bar(d)
@@ -40,7 +40,7 @@ def scr_bank(t):
 
 DETECT = [("Bizum Marta", "−22,00 €", None), ("Glovo", "−14,90 €", None), ("Mercadona", "−43,80 €", None),
           ("Amazon", "−19,99 €", None), ("Gasolinera", "−35,00 €", None), ("Bizum cena", "−18,00 €", None),
-          ("Cine", "−8,50 €", None), ("Farmacia", "−9,45 €", None)]
+          ("Netflix", "−17,99 €", "Pago planificado detectado ✓"), ("Gimnasio", "−25,00 €", "Pago planificado detectado ✓")]
 CAP = dict(tap=0.5, read=0.9, lst=2.0, hl=3.6, conf=4.3)
 def scr_capture(t):
     """0..0.6 empty upload; 0.6 tap; 0.9..2.0 reading; 2.0.. list appears; planned highlighted ~3.6"""
@@ -119,7 +119,7 @@ def scr_available(t):
     return s
 
 # ---------------- real composer flow ----------------
-CAP2 = dict(tap_reg=1.2, sheet=1.6, tap_plus=2.5, opts=2.9, tap_img=3.9, read=4.4, lst=6.1, hl=99, conf=7.3, pend=8.4)
+CAP2 = dict(tap_reg=1.2, sheet=1.6, tap_plus=2.5, opts=2.9, tap_img=3.9, read=4.4, lst=6.1, hl=6.9, conf=7.7, pend=8.5)
 NAV = [("Inicio", "home"), ("Movimientos", "mov"), ("Registrar", "plus"), ("Pagos", "cal"), ("Ahorros", "wallet")]
 def _nav(d, s, active="Inicio"):
     y0 = SH - 118
@@ -215,15 +215,15 @@ def scr_capture2(t):
     return scr_capture(t)
 
 
-PENDING = [("Seguro del coche", "día 24", "−380,00 €"), ("Luz", "día 26", "−48,00 €"), ("Teléfono", "día 27", "−70,00 €"),
-           ("Gimnasio", "día 28", "−25,00 €"), ("Netflix", "día 28", "−17,99 €")]
+PENDING = [("Seguro del coche", "día 24", "−380,00 €"), ("Agua", "día 25", "−32,00 €"), ("Luz", "día 26", "−48,00 €"),
+           ("Teléfono", "día 27", "−70,00 €"), ("Spotify", "día 28", "−10,99 €")]
 def scr_pending(t):
     s = Image.new("RGB", (SW, SH), LIGHT); d = ImageDraw.Draw(s, "RGBA")
     R.status_bar(d)
     s.paste(LOGO.resize((40, 48)), (28, 74))
     d.text((74, 72), "propera", font=R.F(R.POP, 38), fill=DARKTXT)
     R.rrect(d, (20, 146, SW - 20, 220), 18, fill=(225, 245, 233))
-    d.text((44, 168), "✓ 8 movimientos registrados", font=I("SemiBold", 22), fill=(30, 120, 80))
+    d.text((44, 168), "✓ Movimientos al día", font=I("SemiBold", 22), fill=(30, 120, 80))
     d.text((32, 250), "Aún por pasar este mes", font=I("SemiBold", 23), fill=DARKTXT)
     d.text((32, 284), "Reservado desde el día 1", font=I("Regular", 17), fill=(120, 115, 140))
     y = 322
@@ -237,8 +237,8 @@ def scr_pending(t):
         d.text((78, yy + 40), day, font=I("Regular", 16), fill=(130, 125, 150))
         d.text((SW - 44 - d.textlength(amt, font=I("Medium", 21)), yy + 22), amt, font=I("Medium", 21), fill=RED)
         y += 80
-    if t > 1.8:
-        p = R.ease((t - 1.8) / 0.4)
+    if t > 2.4:
+        p = R.ease((t - 2.4) / 0.4)
         R.rrect(d, (20, y + 10, SW - 20, y + 190), 26, fill=(20, 14, 42))
         d.text((44, y + 32), "Disponible real", font=I("Regular", 20), fill=(190, 185, 215))
         d.text((44, y + 64), "640,00 € − 540,99 €", font=I("Regular", 18), fill=(150, 145, 175))

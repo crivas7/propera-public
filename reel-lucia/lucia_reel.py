@@ -4,8 +4,8 @@ from PIL import Image, ImageDraw, ImageFilter
 import render as R, lucia_screens as L, endcard as EC
 
 W, H, FPS = 1080, 1920, 30
-DUR = 32.9
-T = dict(A=0.0, B=4.0, C=10.9, E=22.8, F=28.8)
+DUR = 29.6
+T = dict(A=0.0, B=4.0, C=10.9, E=23.1, F=25.6)
 DARKTXT = (25, 18, 50); PURP_D = (110, 60, 210)
 
 def _frames(folder):
@@ -61,16 +61,16 @@ def sC(t):  # capture with Propera
     return im
 
 def sE(t):  # payoff, smiling
-    im = darken_top(clip(L4, 'work/l4', t, 'CLIP 6608792 · Lucía sonriendo'))
+    im = darken_top(clip(L4, 'work/l4', t + 3.5, 'CLIP 6608792 · Lucía sonriendo'))
     d = ImageDraw.Draw(im, 'RGBA')
     f = R.F(R.POP, 80); l1 = "640 € en el banco."
-    p = R.ease((t - 0.2) / 0.4); w = d.textlength(l1, font=f)
+    p = R.ease((t - 0.0) / 0.3); w = d.textlength(l1, font=f)
     d.text(((W - w) / 2, 170 + (1 - p) * 40), l1, font=f, fill=(255, 255, 255, int(255 * p)))
-    sp = R.ease((t - 1.9) / 0.45)
+    sp = R.ease((t - 0.2) / 0.35)
     if sp > 0:
         y = 170 + 58
         d.line(((W - w) / 2 - 10, y, (W - w) / 2 - 10 + (w + 20) * sp, y), fill=R.PURPLE, width=9)
-    R.headline(im, [("99 € de verdad.", R.PURPLE)], 280, t, 88, start=2.3)
+    R.headline(im, [("99 € de verdad.", R.PURPLE)], 280, t, 88, start=0.3)
     return im
 
 def sF(t):
