@@ -6,6 +6,9 @@ import render as R, lucia_screens as L, endcard as EC
 W, H, FPS = 1080, 1920, 30
 DUR = 35.3
 T = dict(A=0.0, B=4.0, C=10.9, E=27.6, F=31.3)
+import json
+if os.environ.get('LTL'):
+    _tl = json.loads(os.environ['LTL']); T.update(_tl['T']); DUR = _tl['DUR']; L.CAP2.update(_tl['CAP2']); L.AV.update(_tl['AV'])
 DARKTXT = (25, 18, 50); PURP_D = (110, 60, 210)
 
 def _frames(folder):
@@ -45,16 +48,16 @@ def sB(t):  # bank, problem
     gt = t + T['B']
     im = darken_top(clip(L2, 'work/l2', gt, 'CLIP 6608790 · Lucía con el móvil'))
     R.headline(im, [("Día 20", R.WHITE)], 115, t, 76)
-    pin = R.ease((t - 0.8) / 0.45)
+    pin = R.ease((t - 0.1) / 0.35)
     if pin > 0:
         im = Image.blend(im, soft(im), 0.85 * pin)
         R.headline(im, [("Día 20", R.WHITE)], 115, 9, 76)
-        R.paste_phone(im, R.phone(L.scr_bank(t - 0.8), 0.95), W / 2, 230 + (1 - pin) * 1200)
+        R.paste_phone(im, R.phone(L.scr_bank(t), 0.95), W / 2, 230 + (1 - pin) * 1200)
     return im
 
 L.CAP.update(tap=3.2, read=3.5, lst=6.1, hl=9.1, conf=10.2)
 def sC(t):  # capture with Propera
-    gt = min(16.6, 10.9 + t * 0.45)
+    gt = min(16.6, T['C'] + t * 0.45)
     im = soft(clip(L2, 'work/l2', gt, 'CLIP 6608790 · Lucía con el móvil'))
     R.headline(im, [("Con Propera", R.PURPLE)], 115, t + 1, 76)
     R.paste_phone(im, R.phone(L.scr_capture2(t), 0.95), W / 2, 230)

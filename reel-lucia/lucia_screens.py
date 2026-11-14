@@ -17,9 +17,8 @@ def tap(d, x, y, t, t0):
         d.ellipse((x - 16, y - 16, x + 16, y + 16), fill=(110, 60, 210, int(160 * (1 - k))))
 
 # generic (unbranded) bank app screen
-BANK_MOVES = [("Bizum Marta", "−22,00"), ("Glovo", "−14,90"), ("Mercadona", "−43,80"), ("Café", "−3,20"),
-              ("Amazon", "−19,99"), ("Gasolinera", "−35,00"), ("Bizum cena", "−18,00"), ("Farmacia", "−9,45"),
-              ("Cine", "−8,50"), ("Netflix", "−17,99"), ("Gimnasio", "−25,00"), ("Uber", "−11,30")]
+BANK_MOVES = [("Bizum Marta", "−22,00"), ("Glovo", "−14,90"), ("Mercadona", "−43,80"), ("Amazon", "−19,99"),
+              ("Gasolinera", "−35,00"), ("Bizum cena", "−18,00"), ("Netflix", "−17,99"), ("Gimnasio", "−25,00")]
 def scr_bank(t):
     s = Image.new("RGB", (SW, SH), (255, 255, 255)); d = ImageDraw.Draw(s, "RGBA")
     R.status_bar(d)
@@ -28,9 +27,8 @@ def scr_bank(t):
     d.text((44, 160), "Saldo disponible", font=I("Regular", 20), fill=(200, 210, 235))
     d.text((44, 196), "640,00 €", font=I("Bold", 56), fill=(255, 255, 255))
     d.text((32, 324), "Movimientos", font=I("SemiBold", 22), fill=(30, 30, 40))
-    off = min(1.0, max(0.0, (t - 0.6) / 3.0)) * 260
-    y0 = 368 - off
-    for n, (a, b) in enumerate(BANK_MOVES * 2):
+    y0 = 368
+    for n, (a, b) in enumerate(BANK_MOVES):
         y = y0 + n * 64
         if y < 350 or y > SH - 40: continue
         d.text((32, y), a, font=I("Regular", 21), fill=(50, 50, 60))
@@ -247,6 +245,7 @@ def scr_pending(t):
     return s
 
 
+AV = dict(box=2.2)
 def scr_avail2(t):
     s = Image.new("RGB", (SW, SH), LIGHT); d = ImageDraw.Draw(s, "RGBA")
     R.status_bar(d)
@@ -255,22 +254,24 @@ def scr_avail2(t):
     d.text((32, 146), "Hola, Lucía", font=I("SemiBold", 28), fill=DARKTXT)
     R.rrect(d, (20, 196, SW - 20, 420), 28, fill=(20, 14, 42))
     d.text((44, 222), "Disponible real", font=I("Regular", 21), fill=(190, 185, 215))
-    p = R.ease((t - 0.2) / 2.2)
-    val = 640.00 - (640.00 - 99.01) * p
-    txt = f"{val:,.2f} €".replace(",", "X").replace(".", ",").replace("X", ".")
-    d.text((42, 260), txt, font=I("Bold", 70), fill=(56, 189, 248))
-    d.text((44, 364), "Actualizado ahora", font=I("Regular", 18), fill=(150, 145, 175))
+    B = AV['box']
+    if t < B:
+        d.text((44, 276), "Calculando…", font=I("Bold", 46), fill=(120, 115, 160))
+    else:
+        q = R.ease((t - B) / 0.35)
+        d.text((42, 260), "99,01 €", font=I("Bold", 70), fill=(56, 189, 248, int(255 * q)))
+        d.text((44, 364), "Actualizado ahora", font=I("Regular", 18), fill=(150, 145, 175))
     rows = [("Saldo en el banco", "640,00 €", DARKTXT), ("Pagos planificados pendientes", "−540,99 €", RED)]
     y = 448
     for n, (a, b, c) in enumerate(rows):
-        pp = R.ease((t - 0.3 - n * 0.4) / 0.35)
+        pp = R.ease((t - 0.1 - n * 0.35) / 0.3)
         if pp <= 0: continue
         R.rrect(d, (20, y, SW - 20, y + 74), 16, fill=(255, 255, 255), outline=(230, 228, 238), width=2)
         d.text((44, y + 24), a, font=I("Regular", 21), fill=(60, 55, 80))
         d.text((SW - 44 - d.textlength(b, font=I("SemiBold", 21)), y + 24), b, font=I("SemiBold", 21), fill=c)
         y += 86
-    if t > 2.4:
-        pp = R.ease((t - 2.4) / 0.35)
+    if t > AV['box']:
+        pp = R.ease((t - AV['box']) / 0.35)
         R.rrect(d, (20, y + 4, SW - 20, y + 84), 20, fill=(238, 230, 255))
         d.text((44, y + 30), "Disponible real", font=I("SemiBold", 22), fill=PURP_D)
         v = "99,01 €"
