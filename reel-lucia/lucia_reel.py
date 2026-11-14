@@ -4,8 +4,8 @@ from PIL import Image, ImageDraw, ImageFilter
 import render as R, lucia_screens as L, endcard as EC
 
 W, H, FPS = 1080, 1920, 30
-DUR = 32.5
-T = dict(A=0.0, B=4.0, C=10.9, E=25.4, F=28.5)
+DUR = 33.1
+T = dict(A=0.0, B=4.0, C=10.9, E=25.4, F=29.1)
 DARKTXT = (25, 18, 50); PURP_D = (110, 60, 210)
 
 def _frames(folder):
@@ -61,7 +61,7 @@ def sC(t):  # capture with Propera
     return im
 
 def sE(t):  # payoff, smiling
-    im = darken_top(clip(L4, 'work/l4', t + 3.5, 'CLIP 6608792 · Lucía sonriendo'))
+    im = darken_top(clip(L4, 'work/l4', t + 0.8, 'CLIP 6608792 · Lucía sonriendo'))
     d = ImageDraw.Draw(im, 'RGBA')
     f = R.F(R.POP, 80); l1 = "640 € en el banco."
     p = R.ease((t - 0.0) / 0.3); w = d.textlength(l1, font=f)
