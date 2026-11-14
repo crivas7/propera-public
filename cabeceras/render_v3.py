@@ -30,7 +30,7 @@ def wordmark(im, x, y, size, style):
     if style == 'bar':
         d.rounded_rectangle((x + size * 0.04, y + size * 1.42, x + size * 1.3, y + size * 1.42 + size * 0.11), size * 0.06, fill=LILA)
 
-def render(W, H, k, lx, ly, cx, cy, cw, out, kc, lema=True, style='dot', S=3):
+def render(W, H, k, lx, ly, cx, cy, cw, out, kc, lema=True, style='dot', S=3, rows=True):
     im = Image.new('RGB', (W * S, H * S), BG); d = ImageDraw.Draw(im)
     s = lambda v: int(round(v * S))
     wordmark(im, s(lx), s(ly), s(54 * k), style); d = ImageDraw.Draw(im)
@@ -40,12 +40,15 @@ def render(W, H, k, lx, ly, cx, cy, cw, out, kc, lema=True, style='dot', S=3):
     if lema:
         f1, f2 = I('Regular', s(20 * k)), I('SemiBold', s(20 * k)); y = ly + 262 * k; a = "Prosperar comienza con orden. · "
         d.text((s(lx), s(y)), a, font=f1, fill=MUTED); d.text((s(lx) + d.textlength(a, font=f1), s(y)), "propera.life", font=f2, fill=WHITE)
-    k = kc; p = 30 * k; ch = 272 * k
+    k = kc; p = 30 * k; ch = (272 if rows else 158) * k
     d.rounded_rectangle((s(cx), s(cy), s(cx + cw), s(cy + ch)), s(28 * k), fill=CARD, outline=BORDER, width=s(1.5))
     x0, x1 = cx + p, cx + cw - p; y = cy + 30 * k
     d.text((s(x0), s(y)), "Disponible real", font=I('Regular', s(17 * k)), fill=CMUT)
     d.text((s(x0 - 3 * k), s(y + 30 * k)), "99,01 €", font=I('Bold', s(62 * k)), fill=BLUE)
-    yl = y + 122 * k; d.line((s(x0), s(yl), s(x1), s(yl)), fill=BORDER, width=s(1.5))
+    yl = y + 122 * k
+    if not rows:
+        im.resize((W, H), Image.LANCZOS).save(out, optimize=True); return
+    d.line((s(x0), s(yl), s(x1), s(yl)), fill=BORDER, width=s(1.5))
     fr, fb = I('Regular', s(17 * k)), I('SemiBold', s(17 * k))
     for i, (a, b, c) in enumerate([("Saldo en el banco", "640,00 €", WHITE), ("Pagos planificados", "−540,99 €", PINK)]):
         yy = yl + (24 + i * 40) * k
@@ -58,5 +61,5 @@ if __name__ == '__main__':
         render(1500, 500, 1.15, 90, 36, 985, 62, 440, f'/tmp/x_{st}.png', 1.3, lema=False, style=st)
     render(1500, 500, 1.15, 90, 36, 985, 62, 440, O + 'cabecera_x_v3_1500x500.png', 1.3, lema=False)
     render(1640, 624, 1.15, 200, 150, 1020, 142, 430, O + 'portada_facebook_v3_1640x624.png', 1.25)
-    render(2560, 1440, 1.5, 540, 545, 1565, 522, 480, O + 'banner_youtube_v3_2560x1440.png', 1.45, lema=False, S=2)
+    render(2560, 1440, 1.2, 680, 578, 1530, 632, 350, O + 'banner_youtube_v4_2560x1440.png', 1.1, lema=False, S=2, rows=False)
     print('ok')
