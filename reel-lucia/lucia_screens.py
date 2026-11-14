@@ -19,7 +19,7 @@ def tap(d, x, y, t, t0):
 # generic (unbranded) bank app screen
 BANK_MOVES = [("Bizum Marta", "−22,00"), ("Glovo", "−14,90"), ("Mercadona", "−43,80"), ("Café", "−3,20"),
               ("Amazon", "−19,99"), ("Gasolinera", "−35,00"), ("Bizum cena", "−18,00"), ("Farmacia", "−9,45"),
-              ("Cine", "−8,50"), ("Uber", "−11,30")]
+              ("Cine", "−8,50"), ("Netflix", "−17,99"), ("Gimnasio", "−25,00"), ("Uber", "−11,30")]
 def scr_bank(t):
     s = Image.new("RGB", (SW, SH), (255, 255, 255)); d = ImageDraw.Draw(s, "RGBA")
     R.status_bar(d)
@@ -27,18 +27,12 @@ def scr_bank(t):
     R.rrect(d, (20, 136, SW - 20, 300), 24, fill=(30, 60, 120))
     d.text((44, 160), "Saldo disponible", font=I("Regular", 20), fill=(200, 210, 235))
     d.text((44, 196), "640,00 €", font=I("Bold", 56), fill=(255, 255, 255))
-    d.text((32, 318), "Próximos recibos", font=I("SemiBold", 22), fill=(30, 30, 40))
-    for n, (a, b) in enumerate([("Netflix · día 28", "−17,99 €"), ("Gimnasio · día 28", "−25,00 €")]):
-        yy = 356 + n * 56
-        R.rrect(d, (20, yy, SW - 20, yy + 48), 12, fill=(244, 246, 252))
-        d.text((36, yy + 12), a, font=I("Regular", 20), fill=(50, 50, 60))
-        d.text((SW - 36 - d.textlength(b, font=I("Medium", 20)), yy + 12), b, font=I("Medium", 20), fill=(60, 60, 70))
-    d.text((32, 480), "Movimientos", font=I("SemiBold", 22), fill=(30, 30, 40))
-    off = min(1.0, max(0.0, (t - 0.6) / 3.0)) * 200
-    y0 = 524 - off
+    d.text((32, 324), "Movimientos", font=I("SemiBold", 22), fill=(30, 30, 40))
+    off = min(1.0, max(0.0, (t - 0.6) / 3.0)) * 260
+    y0 = 368 - off
     for n, (a, b) in enumerate(BANK_MOVES * 2):
         y = y0 + n * 64
-        if y < 510 or y > SH - 40: continue
+        if y < 350 or y > SH - 40: continue
         d.text((32, y), a, font=I("Regular", 21), fill=(50, 50, 60))
         d.text((SW - 32 - d.textlength(b + " €", font=I("Medium", 21)), y), b + " €", font=I("Medium", 21), fill=(60, 60, 70))
         d.line((32, y + 44, SW - 32, y + 44), fill=(238, 238, 242), width=2)
@@ -46,7 +40,7 @@ def scr_bank(t):
 
 DETECT = [("Bizum Marta", "−22,00 €", None), ("Glovo", "−14,90 €", None), ("Mercadona", "−43,80 €", None),
           ("Amazon", "−19,99 €", None), ("Gasolinera", "−35,00 €", None), ("Bizum cena", "−18,00 €", None),
-          ("Netflix", "−17,99 €", "Pago planificado · día 28"), ("Gimnasio", "−25,00 €", "Pago planificado · día 28")]
+          ("Netflix", "−17,99 €", "Pago planificado · marcado como pagado"), ("Gimnasio", "−25,00 €", "Pago planificado · marcado como pagado")]
 CAP = dict(tap=0.5, read=0.9, lst=2.0, hl=3.6, conf=4.3)
 def scr_capture(t):
     """0..0.6 empty upload; 0.6 tap; 0.9..2.0 reading; 2.0.. list appears; planned highlighted ~3.6"""
@@ -125,7 +119,7 @@ def scr_available(t):
     return s
 
 # ---------------- real composer flow ----------------
-CAP2 = dict(tap_reg=1.2, sheet=1.6, tap_plus=2.5, opts=2.9, tap_img=3.9, read=4.4, lst=6.1, hl=8.8, conf=10.3, pend=11.6)
+CAP2 = dict(tap_reg=1.2, sheet=1.6, tap_plus=2.5, opts=2.9, tap_img=3.9, read=4.4, lst=6.1, hl=9.4, conf=12.4, pend=13.8)
 NAV = [("Inicio", "home"), ("Movimientos", "mov"), ("Registrar", "plus"), ("Pagos", "cal"), ("Ahorros", "wallet")]
 def _nav(d, s, active="Inicio"):
     y0 = SH - 118
@@ -266,7 +260,7 @@ def scr_avail2(t):
     txt = f"{val:,.2f} €".replace(",", "X").replace(".", ",").replace("X", ".")
     d.text((42, 260), txt, font=I("Bold", 70), fill=(56, 189, 248))
     d.text((44, 364), "Actualizado ahora", font=I("Regular", 18), fill=(150, 145, 175))
-    rows = [("Saldo en el banco", "640,00 €", DARKTXT), ("Pagos planificados de este mes", "−540,99 €", RED)]
+    rows = [("Saldo en el banco", "640,00 €", DARKTXT), ("Pagos planificados pendientes", "−540,99 €", RED)]
     y = 448
     for n, (a, b, c) in enumerate(rows):
         pp = R.ease((t - 0.3 - n * 0.4) / 0.35)

@@ -9,12 +9,13 @@ CUES = [
  (11.0, 12.3, "¿Apuntarlos uno a uno?"),
  (12.6, 13.4, "Ni de broma."),
  (13.5, 16.65, "Hace una sola captura del banco y se la pasa a Propera."),
- (17.0, 19.3, "Propera saca todos los movimientos de golpe…"),
- (19.7, 21.1, "…y detecta el Netflix y el gimnasio…"),
- (21.15, 22.5, "…que aún tienen que pasar."),
- (22.6, 24.55, "640 € en el banco…"),
- (24.85, 26.0, "…99 € de verdad."),
- (26.35, 28.2, "Y lo ha resuelto en diez segundos."),
+ (17.0, 19.35, "Propera saca todos los movimientos de golpe…"),
+ (19.65, 21.4, "…y reconoce el Netflix y el gimnasio…"),
+ (21.4, 22.75, "…como pagos planificados…"),
+ (22.75, 24.7, "…para no contarlos dos veces."),
+ (24.8, 26.75, "640 € en el banco…"),
+ (27.05, 28.2, "…99 € de verdad."),
+ (28.55, 30.4, "Y lo ha resuelto en diez segundos."),
 ]
 f = R.F(R.POP, 50)
 src, dst = sys.argv[1], sys.argv[2]

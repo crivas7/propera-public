@@ -44,3 +44,33 @@ def save(out, path):
     out = reverb(out); out = np.clip(out, -1, 1)
     with wave.open(path, 'wb') as w:
         w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR); w.writeframes((out * 32767).astype(np.int16).tobytes())
+
+# ---------- soft palette (v2) ----------
+def lp(x, k): return np.convolve(x, np.ones(k) / k, 'same')
+def soft_tap(a=0.07):
+    n = int(0.06 * SR); tt = np.arange(n) / SR
+    body = np.sin(2 * np.pi * 820 * tt) * env(n, 0.001, 0.012)
+    noise = lp(rng.standard_normal(n), 30) * env(n, 0.0005, 0.006) * 0.6
+    return lp(body + noise, 10) * a
+def marimba(freq, a=0.06, dec=0.28):
+    n = int(1.0 * SR); tt = np.arange(n) / SR
+    x = np.sin(2 * np.pi * freq * tt) * env(n, 0.003, dec) + 0.25 * np.sin(2 * np.pi * freq * 4 * tt) * env(n, 0.002, dec / 5)
+    return lp(x, 4) * a
+def detect_soft(a=0.06):
+    o = np.zeros(int(1.2 * SR)); add(o, marimba(783.99, a), 0); add(o, marimba(1046.5, a * 0.9), 0.12); return o
+def pad(freqs, dur=1.6, a=0.02):
+    n = int(dur * SR); tt = np.arange(n) / SR
+    e = np.minimum(1, tt / 0.15) * np.exp(-np.maximum(0, tt - 0.3) / 0.6)
+    return sum(np.sin(2 * np.pi * f * tt) for f in freqs) * e * a
+def success_soft(a=0.055):
+    o = np.zeros(int(2.0 * SR))
+    for k, f in enumerate([523.25, 659.25, 783.99]): add(o, marimba(f, a, 0.35), k * 0.09)
+    add(o, pad([261.63, 329.63, 392.0], 1.8, 0.018), 0.05)
+    return o
+def tick_soft(a=0.018):
+    n = int(0.02 * SR); tt = np.arange(n) / SR
+    return lp(np.sin(2 * np.pi * 1500 * tt) * env(n, 0.0008, 0.005), 3) * a
+def counter_soft(out, t0, t1):
+    t = t0; step = 0.05
+    while t < t1:
+        add(out, tick_soft(), t); t += step; step *= 1.07
