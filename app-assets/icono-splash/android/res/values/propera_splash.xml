@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="splash_background">#7C2CDE</color>
+
+    <!-- Dependencia: implementation("androidx.core:core-splashscreen:1.0.1") -->
+    <style name="Theme.Propera.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_logo</item>
+        <!-- Cambia por el tema real de la app -->
+        <item name="postSplashScreenTheme">@style/Theme.Propera</item>
+    </style>
+</resources>
