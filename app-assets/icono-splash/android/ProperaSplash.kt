@@ -20,9 +20,9 @@ import com.propera.app.R
 
 private val SplashBackground = Color(0xFF7C2CDE)
 private const val PUPIL_X = 0.52f
-private const val PUPIL_Y = 0.4977f
-private const val EYE_TOP = 0.4438f
-private const val EYE_BOTTOM = 0.54f
+private const val PUPIL_Y = 0.4978f
+private const val EYE_TOP = 0.4439f
+private const val EYE_BOTTOM = 0.5402f
 
 /**
  * Animación de entrada de Propera. Empieza igual que el splash del sistema (halcón con el ojo vacío):

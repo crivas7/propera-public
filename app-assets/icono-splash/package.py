@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 OUT = '/home/claude/out/propera_icono_splash'
 shutil.rmtree(OUT, ignore_errors=True)
 def mk(p): os.makedirs(os.path.dirname(p), exist_ok=True); return p
-ICON = Image.open('/home/claude/out/icono_propera_cian_v2_1024.png').convert('RGB')
+ICON = Image.open('/home/claude/out/icono_propera_final_1024.png').convert('RGB')
 ic = np.array(ICON).astype(float); N = 1024
 # ---------- capas del halcón (blanco, anillo del ojo, pupila) a partir del icono maestro
 bgrow = ic[:, 40:80].mean(1); g = ic[..., 1]; bgG = bgrow[:, 1][:, None]
@@ -69,7 +69,7 @@ fgmask = ((bodyA + ringA + pupA) > 0.02).astype(np.uint8)
 bgimg = cv2.inpaint(np.array(ICON)[..., ::-1], cv2.dilate(fgmask * 255, np.ones((9, 9), np.uint8)), 12, cv2.INPAINT_TELEA)[..., ::-1]
 BGI = Image.fromarray(bgimg)
 L_mono = layer(np.clip(bodyA + ringA, 0, 1), (255, 255, 255)).crop(bb)
-def adaptive(layers, px, frac=0.46):
+def adaptive(layers, px, frac=0.485):
     im = Image.new('RGBA', (px, px), (0, 0, 0, 0)); h = px * frac; w = h * MW / MH
     for L in layers: im.alpha_composite(L.resize((round(w), round(h)), Image.LANCZOS), (round((px - w) / 2 + px * 0.006), round((px - h) / 2)))
     return im

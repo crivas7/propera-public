@@ -11,9 +11,9 @@ struct ProperaSplashView: View {
     @State private var wordmark: Double = 0
 
     // Posiciones dentro del lienzo de 288 x 288 pt (fracciones 0...1)
-    private let pupilAnchor = UnitPoint(x: 0.52, y: 0.4977)
-    private let eyeTop: CGFloat = 0.4438
-    private let eyeBottom: CGFloat = 0.54
+    private let pupilAnchor = UnitPoint(x: 0.52, y: 0.4978)
+    private let eyeTop: CGFloat = 0.4439
+    private let eyeBottom: CGFloat = 0.5402
 
     var body: some View {
         ZStack {
