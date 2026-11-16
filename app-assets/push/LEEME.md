@@ -5,6 +5,7 @@
 - **iOS:** el sistema usa el icono de la app y el nombre "Propera" automáticamente. Solo controlamos el título, el texto y (opcional) una imagen adjunta.
 - **Android:**
   - Icono pequeño: `ic_stat_propera` (halcón blanco sobre transparente; Android lo tiñe). Va en la barra de estado y en la cabecera de la notificación.
+  - **Sin icono grande:** no usar `setLargeIcon` con el logo; repetiría el halcón que ya sale en la cabecera. Reservarlo solo para contenido con sentido propio (p. ej. el logo de un comercio en el futuro).
   - Color de acento: `@color/notification_accent` = `#7C2CDE` (el lila del splash).
 
 ```kotlin
