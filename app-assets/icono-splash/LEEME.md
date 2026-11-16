@@ -1,6 +1,7 @@
 # Propera · icono de la app y splash screen
 
-- Icono: halcón blanco con el ojo cian sobre degradado violeta.
+- Icono: halcón blanco con el ojo cian sobre degradado violeta. **Versión 2 (16-nov):** halcón un 5 % más ancho y un 3 % más alto (545 × 605 px en el icono de 1024). En Android, el icono adaptativo sigue dentro de la zona segura de 66 dp.
+- El splash no cambia respecto a la versión anterior.
 - Splash: fondo lila `#7C2CDE`, halcón en el centro y animación de entrada (se enciende la pupila cian, el halcón parpadea de abajo hacia arriba y entra "propera." con el punto cian).
 
 Cómo funciona el splash en las dos plataformas:

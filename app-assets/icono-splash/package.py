@@ -4,7 +4,9 @@ from PIL import Image, ImageDraw, ImageFont
 OUT = '/home/claude/out/propera_icono_splash'
 shutil.rmtree(OUT, ignore_errors=True)
 def mk(p): os.makedirs(os.path.dirname(p), exist_ok=True); return p
-ICON = Image.open('/home/claude/out/icono_propera_final_1024.png').convert('RGB')
+ICON = Image.open('/home/claude/out/icono_propera_final_1024.png').convert('RGB')          # base del splash (sin cambios)
+ICON_APP = Image.open('/home/claude/out/icono_tamano_106_w105_h103.png').convert('RGB')   # icono de app: halcón +5 % ancho, +3 % alto
+SX, SY = 1.0506, 1.0302
 ic = np.array(ICON).astype(float); N = 1024
 # ---------- capas del halcón (blanco, anillo del ojo, pupila) a partir del icono maestro
 bgrow = ic[:, 40:80].mean(1); g = ic[..., 1]; bgG = bgrow[:, 1][:, None]
@@ -46,7 +48,7 @@ def wordmark(scale):
     d.ellipse((x, y, x + dot, y + dot), fill=CYAN); return im
 # ================= iOS =================
 IO = f'{OUT}/ios/Assets.xcassets'
-ICON.save(mk(f'{IO}/AppIcon.appiconset/AppIcon-1024.png'))
+ICON_APP.save(mk(f'{IO}/AppIcon.appiconset/AppIcon-1024.png'))
 json.dump({"images": [{"filename": "AppIcon-1024.png", "idiom": "universal", "platform": "ios", "size": "1024x1024"}], "info": {"author": "xcode", "version": 1}},
           open(f'{IO}/AppIcon.appiconset/Contents.json', 'w'), indent=2)
 def imageset(name, make):
@@ -70,7 +72,7 @@ bgimg = cv2.inpaint(np.array(ICON)[..., ::-1], cv2.dilate(fgmask * 255, np.ones(
 BGI = Image.fromarray(bgimg)
 L_mono = layer(np.clip(bodyA + ringA, 0, 1), (255, 255, 255)).crop(bb)
 def adaptive(layers, px, frac=0.485):
-    im = Image.new('RGBA', (px, px), (0, 0, 0, 0)); h = px * frac; w = h * MW / MH
+    im = Image.new('RGBA', (px, px), (0, 0, 0, 0)); h = px * frac * SY; w = px * frac * MW / MH * SX
     for L in layers: im.alpha_composite(L.resize((round(w), round(h)), Image.LANCZOS), (round((px - w) / 2 + px * 0.006), round((px - h) / 2)))
     return im
 def rmask(s, kind):
@@ -84,7 +86,7 @@ for dn, k in (('mdpi', 1), ('hdpi', 1.5), ('xhdpi', 2), ('xxhdpi', 3), ('xxxhdpi
     BGI.resize((p108, p108), Image.LANCZOS).save(f'{R}/mipmap-{dn}/ic_launcher_background.png')
     adaptive([L_mono], p108).save(f'{R}/mipmap-{dn}/ic_launcher_monochrome.png')
     for kind, name in (('square', 'ic_launcher'), ('round', 'ic_launcher_round')):
-        t = ICON.resize((p48, p48), Image.LANCZOS).convert('RGBA'); t.putalpha(rmask(p48, kind)); t.save(f'{R}/mipmap-{dn}/{name}.png')
+        t = ICON_APP.resize((p48, p48), Image.LANCZOS).convert('RGBA'); t.putalpha(rmask(p48, kind)); t.save(f'{R}/mipmap-{dn}/{name}.png')
     canvas([L_body, L_ring], round(288 * k)).save(mk(f'{R}/drawable-{dn}/splash_logo.png'))
 for name, ls in (('splash_halcon', [L_body]), ('splash_anillo', [L_ring]), ('splash_pupila', [L_pup])):
     canvas(ls, 1152).save(mk(f'{R}/drawable-nodpi/{name}.png'))
