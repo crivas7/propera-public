@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="propera_cian">#38C4F8</color>
+    <!-- Cian de interfaz en modo claro: más profundo para que contraste sobre blanco (≈3,6:1) -->
+    <color name="propera_cian">#0A8FC7</color>
     <color name="propera_lila">#7C2CDE</color>
 </resources>
