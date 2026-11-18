@@ -1,6 +1,8 @@
 # Propera · icono de la app y splash screen
 
-- Icono: halcón blanco con el ojo cian sobre degradado violeta. **Versión 2 (16-nov):** halcón un 5 % más ancho y un 3 % más alto (545 × 605 px en el icono de 1024). En Android, el icono adaptativo sigue dentro de la zona segura de 66 dp.
+- Icono: halcón blanco con el ojo cian sobre degradado violeta. **Versión 3 (18-nov):** halcón un 10 % más grande y un 5 % más ancho, con la cabeza y el pico ampliados juntos y el borde del pico limpio. Sustituye a la versión 2, que tenía el pico sin ampliar.
+- **Variantes de iOS (iOS 18+):** `AppIcon-1024-dark.png` (halcón sobre lila casi negro, para iconos en modo oscuro) y `AppIcon-1024-tinted.png` (escala de grises, iOS lo tiñe con el color que elija el usuario). Ya están declaradas en `Contents.json`.
+- **Android:** el icono adaptativo se ajusta a la zona segura de 66 dp; la capa `ic_launcher_monochrome` es la que usa Android para los iconos temáticos (su equivalente al tintado).
 - El splash no cambia respecto a la versión anterior.
 - Splash: fondo lila `#7C2CDE`, halcón en el centro y animación de entrada (se enciende la pupila cian, el halcón parpadea de abajo hacia arriba y entra "propera." con el punto cian).
 

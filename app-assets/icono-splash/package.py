@@ -5,8 +5,8 @@ OUT = '/home/claude/out/propera_icono_splash'
 shutil.rmtree(OUT, ignore_errors=True)
 def mk(p): os.makedirs(os.path.dirname(p), exist_ok=True); return p
 ICON = Image.open('/home/claude/out/icono_propera_final_1024.png').convert('RGB')          # base del splash (sin cambios)
-ICON_APP = Image.open('/home/claude/out/icono_tamano_106_w105_h103.png').convert('RGB')   # icono de app: halcón +5 % ancho, +3 % alto
-SX, SY = 1.0506, 1.0302
+ICON_APP = Image.open('/home/claude/out/icono_pico_suave.png').convert('RGB')   # icono de app v3: halcón +10 % (y +5 % de ancho), pico limpio
+SAFE_R = 0.300   # radio máximo del halcón en el icono adaptativo (zona segura de Android: 66/108/2 = 0.3056)
 ic = np.array(ICON).astype(float); N = 1024
 # ---------- capas del halcón (blanco, anillo del ojo, pupila) a partir del icono maestro
 bgrow = ic[:, 40:80].mean(1); g = ic[..., 1]; bgG = bgrow[:, 1][:, None]
@@ -71,9 +71,37 @@ fgmask = ((bodyA + ringA + pupA) > 0.02).astype(np.uint8)
 bgimg = cv2.inpaint(np.array(ICON)[..., ::-1], cv2.dilate(fgmask * 255, np.ones((9, 9), np.uint8)), 12, cv2.INPAINT_TELEA)[..., ::-1]
 BGI = Image.fromarray(bgimg)
 L_mono = layer(np.clip(bodyA + ringA, 0, 1), (255, 255, 255)).crop(bb)
-def adaptive(layers, px, frac=0.485):
-    im = Image.new('RGBA', (px, px), (0, 0, 0, 0)); h = px * frac * SY; w = px * frac * MW / MH * SX
-    for L in layers: im.alpha_composite(L.resize((round(w), round(h)), Image.LANCZOS), (round((px - w) / 2 + px * 0.006), round((px - h) / 2)))
+# capas del icono de app (v3) para el icono adaptativo
+ia = np.array(ICON_APP).astype(float); BGA = np.array(BGI).astype(float)
+cyA = (ia[..., 2] > 200) & (ia[..., 0] < 150) & (ia[..., 1] > 110) & (ia[..., 1] > ia[..., 0] + 30)
+pzA = nd.binary_dilation(cyA, iterations=3)
+CYv = np.array(CYAN, float)
+apA = np.clip(((ia - BGA) * (CYv - BGA)).sum(2) / ((CYv - BGA) ** 2).sum(2), 0, 1) * pzA
+awA = np.clip((ia[..., 1] - BGA[..., 1]) / (255 - BGA[..., 1]), 0, 1) * ~pzA
+bbA = Image.fromarray(((awA + apA) > 0.02).astype(np.uint8) * 255).getbbox()
+LA_white = layer(awA, (255, 255, 255)).crop(bbA); LA_pup = layer(apA, CYAN).crop(bbA)
+AW, AH = LA_white.size
+_m = np.array(LA_white)[..., 3] > 25; _ys, _xs = np.where(_m)
+# ---------- iOS: variantes oscura y tintada del icono (Xcode 16+ / iOS 18+)
+def _full(L): im = Image.new('RGBA', (N, N), (0, 0, 0, 0)); im.alpha_composite(L, (bbA[0], bbA[1])); return im
+_W, _P = _full(LA_white), _full(LA_pup)
+_g = np.linspace(0, 1, N)[:, None, None]
+_dark_bg = (np.array([36, 16, 64], float) * (1 - _g) + np.array([20, 10, 36], float) * _g) * np.ones((N, N, 3))   # #241040 -> #140A24
+DARK = Image.fromarray(_dark_bg.astype(np.uint8)).convert('RGBA'); DARK.alpha_composite(_W); DARK.alpha_composite(_P)
+DARK.convert('RGB').save(f'{IO}/AppIcon.appiconset/AppIcon-1024-dark.png')
+TINT = Image.new('RGBA', (N, N), (0, 0, 0, 255)); TINT.alpha_composite(_W)
+_pg = np.array(_P); _pg[..., :3] = 120; TINT.alpha_composite(Image.fromarray(_pg, 'RGBA'))
+TINT.convert('L').save(f'{IO}/AppIcon.appiconset/AppIcon-1024-tinted.png')
+json.dump({"images": [
+    {"filename": "AppIcon-1024.png", "idiom": "universal", "platform": "ios", "size": "1024x1024"},
+    {"appearances": [{"appearance": "luminosity", "value": "dark"}], "filename": "AppIcon-1024-dark.png", "idiom": "universal", "platform": "ios", "size": "1024x1024"},
+    {"appearances": [{"appearance": "luminosity", "value": "tinted"}], "filename": "AppIcon-1024-tinted.png", "idiom": "universal", "platform": "ios", "size": "1024x1024"}],
+    "info": {"author": "xcode", "version": 1}}, open(f'{IO}/AppIcon.appiconset/Contents.json', 'w'), indent=2)
+_rmax = np.hypot(_ys - (AH - 1) / 2, _xs - (AW - 1) / 2).max()      # radio con el halcón centrado, a escala 1
+def adaptive(layers, px):
+    k = SAFE_R * px / _rmax; w, h = AW * k, AH * k
+    im = Image.new('RGBA', (px, px), (0, 0, 0, 0))
+    for L in layers: im.alpha_composite(L.resize((round(w), round(h)), Image.LANCZOS), (round((px - w) / 2), round((px - h) / 2)))
     return im
 def rmask(s, kind):
     m = Image.new('L', (s * 4, s * 4), 0); d = ImageDraw.Draw(m)
@@ -82,9 +110,9 @@ def rmask(s, kind):
     return m.resize((s, s), Image.LANCZOS)
 for dn, k in (('mdpi', 1), ('hdpi', 1.5), ('xhdpi', 2), ('xxhdpi', 3), ('xxxhdpi', 4)):
     p108 = round(108 * k); p48 = round(48 * k)
-    adaptive([L_body, L_ring, L_pup], p108).save(mk(f'{R}/mipmap-{dn}/ic_launcher_foreground.png'))
+    adaptive([LA_white, LA_pup], p108).save(mk(f'{R}/mipmap-{dn}/ic_launcher_foreground.png'))
     BGI.resize((p108, p108), Image.LANCZOS).save(f'{R}/mipmap-{dn}/ic_launcher_background.png')
-    adaptive([L_mono], p108).save(f'{R}/mipmap-{dn}/ic_launcher_monochrome.png')
+    adaptive([LA_white], p108).save(f'{R}/mipmap-{dn}/ic_launcher_monochrome.png')
     for kind, name in (('square', 'ic_launcher'), ('round', 'ic_launcher_round')):
         t = ICON_APP.resize((p48, p48), Image.LANCZOS).convert('RGBA'); t.putalpha(rmask(p48, kind)); t.save(f'{R}/mipmap-{dn}/{name}.png')
     canvas([L_body, L_ring], round(288 * k)).save(mk(f'{R}/drawable-{dn}/splash_logo.png'))
@@ -112,7 +140,7 @@ open(mk(f'{R}/values/propera_splash.xml'), 'w').write('''<?xml version="1.0" enc
     </style>
 </resources>
 ''' % LILA)
-ICON.resize((512, 512), Image.LANCZOS).save(mk(f'{OUT}/android/play_store_512.png'))
+ICON_APP.resize((512, 512), Image.LANCZOS).save(mk(f'{OUT}/android/play_store_512.png'))
 # ================= código =================
 C = dict(px=round(PUP_X, 4), py=round(PUP_Y, 4), et=round(EYE_TOP, 4), eb=round(EYE_BOT, 4))
 open(mk(f'{OUT}/ios/ProperaSplashView.swift'), 'w').write('''import SwiftUI
