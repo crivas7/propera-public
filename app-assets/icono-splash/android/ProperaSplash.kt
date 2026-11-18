@@ -1,4 +1,4 @@
-package com.propera.app.ui.splash   // cambia por tu paquete
+package com.propera.mobile.ui.splash   // ajusta al paquete real si es otro
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -16,9 +16,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import com.propera.app.R
+import android.os.Build
+import androidx.compose.ui.res.colorResource
+import com.propera.mobile.R
 
-private val SplashBackground = Color(0xFF7C2CDE)
 private const val PUPIL_X = 0.52f
 private const val PUPIL_Y = 0.4978f
 private const val EYE_TOP = 0.4439f
@@ -26,19 +27,22 @@ private const val EYE_BOTTOM = 0.5402f
 
 /**
  * Animación de entrada de Propera. Empieza igual que el splash del sistema (halcón con el ojo vacío):
- * se enciende la pupila, el halcón parpadea y entra "propera.". Llama a onFinished al terminar (~1,4 s).
+ * se enciende la pupila y el halcón parpadea de abajo hacia arriba; "propera." está abajo. Llama a onFinished al terminar (~1,4 s).
  */
 @Composable
 fun ProperaSplash(onFinished: () -> Unit = {}) {
     val pupil = remember { Animatable(0f) }
     val lid = remember { Animatable(0f) }
-    val word = remember { Animatable(0f) }
+    // En Android 12+ el splash del sistema ya muestra "propera." abajo (windowSplashScreenBrandingImage):
+    // aquí empieza visible en el mismo sitio para que no salte. En Android 11 o anterior entra con un fundido.
+    val brandingFromSystem = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    val word = remember { Animatable(if (brandingFromSystem) 1f else 0f) }
 
     LaunchedEffect(Unit) {
         delay(150)
         launch { pupil.animateTo(1f, spring(dampingRatio = 0.45f, stiffness = 320f)) }
         delay(300)
-        launch { word.animateTo(1f, tween(450, easing = LinearOutSlowInEasing)) }
+        if (!brandingFromSystem) launch { word.animateTo(1f, tween(450, easing = LinearOutSlowInEasing)) }
         delay(400)
         lid.animateTo(1f, tween(80, easing = FastOutLinearInEasing))      // parpadeo
         delay(30)
@@ -47,7 +51,8 @@ fun ProperaSplash(onFinished: () -> Unit = {}) {
         onFinished()
     }
 
-    Box(Modifier.fillMaxSize().background(SplashBackground), contentAlignment = Alignment.Center) {
+    // Fondo: #7C2CDE en modo claro y #140A24 en modo oscuro (values / values-night)
+    Box(Modifier.fillMaxSize().background(colorResource(R.color.splash_background)), contentAlignment = Alignment.Center) {
         Box(Modifier.size(288.dp)) {
             Image(painterResource(R.drawable.splash_halcon), null, Modifier.fillMaxSize())
             Box(
@@ -67,8 +72,9 @@ fun ProperaSplash(onFinished: () -> Unit = {}) {
             }
         }
         Image(
-            painterResource(R.drawable.splash_marca), "Propera",
-            Modifier.align(Alignment.BottomCenter).padding(bottom = 100.dp).height(34.dp)
+            painterResource(R.drawable.propera_wordmark), "Propera",
+            // 60 dp: margen inferior que usa Android para la imagen de marca del splash
+            Modifier.align(Alignment.BottomCenter).padding(bottom = 60.dp).size(97.85.dp, 18.3.dp)
                 .graphicsLayer { alpha = word.value; translationY = (1f - word.value) * 5.dp.toPx() }
         )
     }
