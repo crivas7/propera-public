@@ -1,1 +1,68 @@
-{"T": {"A": 0.0, "B": 4.2, "C": 9.2, "D": 12.5, "E": 18.75, "F": 21.2}, "DUR": 25.5, "CAPS": [["Las tres palabras más caras del mes.", 1.75, 4.0], ["Las compras…", 4.5, 5.5], ["la tarjeta…", 5.55, 6.7], ["el taxi…", 6.95, 7.75], ["luego lo apunto.", 8.19, 8.95], ["Y a fin de mes,", 9.36, 10.3], ["ha gastado más de lo que creía.", 10.3, 12.2], ["Ahora no lo apunta:", 12.67, 13.6], ["se lo dice a Propera.", 13.88, 14.85], ["Propera prepara el movimiento,", 15.38, 16.9], ["y ella solo confirma.", 16.9, 18.45]]}
+{
+ "T": {
+  "A": 0.0,
+  "B": 4.2,
+  "C": 9.2,
+  "D": 12.5,
+  "E": 18.75,
+  "F": 21.2
+ },
+ "DUR": 25.5,
+ "CAPS": [
+  [
+   "Las tres palabras más caras del mes.",
+   1.75,
+   4.0
+  ],
+  [
+   "Las compras…",
+   4.5,
+   5.5
+  ],
+  [
+   "la tarjeta…",
+   5.55,
+   6.7
+  ],
+  [
+   "el taxi…",
+   6.95,
+   7.75
+  ],
+  [
+   "luego lo apunto.",
+   8.19,
+   8.95
+  ],
+  [
+   "Y a fin de mes,",
+   9.36,
+   10.3
+  ],
+  [
+   "ha gastado más de lo que creía.",
+   10.3,
+   12.2
+  ],
+  [
+   "Ahora Sara no lo apunta:",
+   12.3,
+   13.95
+  ],
+  [
+   "se lo dice a Propera.",
+   14.03,
+   15.2
+  ],
+  [
+   "Propera prepara el movimiento,",
+   15.38,
+   16.9
+  ],
+  [
+   "y ella solo confirma.",
+   16.9,
+   18.45
+  ]
+ ]
+}
