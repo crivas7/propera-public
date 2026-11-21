@@ -247,12 +247,6 @@ def day30_card(im, t, y=1280):
     d.text((x0 + 82, yy + 252), chip, font=f, fill=GREEN + (A,))
 
 # ---------- escenas ----------
-REWIND = [("r1", "28 nov", "Pedido a domicilio", -18.9),
-          ("r2", "21 nov", "Compra online", -59.9),
-          ("r3", "15 nov", "Cena a domicilio", -24.5),
-          ("r4", "9 nov", "Otro pedido", -32.0)]
-RW = 1.5  # duración de cada plano del rebobinado
-
 def s_hook(t):
     im = zoom(clip("hook", t), 1.0 + 0.10 * clamp(t / 4.5), 0.5, 0.42)
     scrim(im, True, 460, 140)
@@ -260,32 +254,89 @@ def s_hook(t):
     bank_card(im, t)
     return im
 
-def s_rewind(t):
-    k = min(int(t / RW), len(REWIND) - 1); lt = t - k * RW
-    name, fecha, que, v = REWIND[k]
-    im = clip(name, lt)
-    im = ImageEnhance.Color(im).enhance(0.7)
-    d = ImageDraw.Draw(im, "RGBA")
-    # textura de rebobinado: franjas y una barra de ruido que sube
-    for y in range(0, H, 6): d.line((0, y, W, y), fill=(0, 0, 0, 28))
-    by = int(H - ((lt * 1400) % (H + 200)))
-    d.rectangle((0, by, W, by + 26), fill=(255, 255, 255, 40))
-    scrim(im, True, 520, 150)
-    d = ImageDraw.Draw(im, "RGBA")
-    pill(im, [("¿En qué se me ha ido", WHITE), ("el sueldo?", PURPLE)], 110, t, 66)
-    # icono ◀◀ y fecha
-    a = 230 if int(t * 3) % 2 == 0 else 170
-    for j in range(2):
-        x = 86 + j * 44
-        d.polygon([(x + 44, 430), (x + 44, 486), (x, 458)], fill=WHITE + (a,))
-    ft = I("Bold", 40); d.text((W - 86 - d.textlength(fecha, font=ft), 434), fecha, font=ft, fill=WHITE + (230,))
-    # etiqueta del gasto
-    p = ease(lt / 0.25); y0 = 1330 + (1 - p) * 40
-    dd = card_base(im, (110, y0, W - 110, y0 + 150), p)
-    dd.text((150, y0 + 28), fecha, font=I("Medium", 30), fill=(120, 115, 140, int(255 * p)))
-    dd.text((150, y0 + 68), que, font=F(POP, 46), fill=INK + (int(255 * p),))
+# Recuerdos: cada gasto cae como una foto sobre un montón y el contador suma lo gastado.
+MEM = [  # carpeta, fecha, concepto, importe, giro, recorte vertical (y0 del 3:4)
+    ("r1", "28 nov", "Pedido a domicilio", -18.90, -3.0, 250),
+    ("r2", "21 nov", "Compra online", -59.90, 2.5, 120),
+    ("r3", "15 nov", "Cena a domicilio", -24.50, -2.0, 300),
+    ("r4", "9 nov", "Otro pedido", -32.00, 3.0, 280),
+]
+MD = 1.2           # cada recuerdo entra cada 1,2 s
+FINAL = 4.8        # remate con el total del mes
+TOTAL = 1400 - 12.40
+CW, CH = 720, 960  # foto 3:4
+
+def mem_photo(name, lt, fecha, y0):
+    fr = clip(name, lt).crop((0, y0, 1080, y0 + 1440)).resize((CW, CH), Image.LANCZOS)
+    fr = ImageEnhance.Color(fr).enhance(0.8)
+    warm = Image.new("RGB", fr.size, (255, 190, 120))
+    fr = Image.blend(fr, warm, 0.08)
+    d = ImageDraw.Draw(fr)
+    st = fecha.upper(); f = I("Bold", 40)
+    x = CW - 34 - d.textlength(st, font=f)
+    d.text((x + 2, 32), st, font=f, fill=(90, 40, 0))
+    d.text((x, 30), st, font=f, fill=(255, 160, 50))
+    card = Image.new("RGBA", (CW + 36, CH + 36), (0, 0, 0, 0))
+    ImageDraw.Draw(card).rounded_rectangle((0, 0, CW + 35, CH + 35), 26, fill=(250, 248, 244, 255))
+    m = Image.new("L", (CW, CH), 0); ImageDraw.Draw(m).rounded_rectangle((0, 0, CW - 1, CH - 1), 16, fill=255)
+    card.paste(fr, (18, 18), m)
+    return card
+
+def place(im, card, cx, cy, rot, scale=1.0, dim=1.0, alpha=1.0):
+    if scale != 1.0: card = card.resize((int(card.width * scale), int(card.height * scale)), Image.LANCZOS)
+    if dim < 1.0:
+        rgb = ImageEnhance.Brightness(card.convert("RGB")).enhance(dim)
+        rgb.putalpha(card.getchannel("A")); card = rgb
+    card = card.rotate(rot, resample=Image.BICUBIC, expand=True)
+    if alpha < 1.0: card.putalpha(card.getchannel("A").point(lambda v: int(v * alpha)))
+    sh = Image.new("RGBA", card.size, (0, 0, 0, 0)); sh.putalpha(card.getchannel("A").point(lambda v: int(v * 0.55)))
+    sh = sh.filter(ImageFilter.GaussianBlur(22))
+    im.paste(sh, (int(cx - card.width / 2 + 10), int(cy - card.height / 2 + 26)), sh)
+    im.paste(card, (int(cx - card.width / 2), int(cy - card.height / 2)), card)
+
+def sticker(im, y0, fecha, que, v, p):
+    dd = card_base(im, (110, y0, W - 110, y0 + 150), p); A = int(255 * p)
+    dd.text((150, y0 + 28), fecha, font=I("Medium", 30), fill=(120, 115, 140, A))
+    dd.text((150, y0 + 68), que, font=F(POP, 46), fill=INK + (A,))
     bt = eur(v); f = F(POP, 54)
-    dd.text((W - 150 - dd.textlength(bt, font=f), y0 + 44), bt, font=f, fill=RED + (int(255 * p),))
+    dd.text((W - 150 - dd.textlength(bt, font=f), y0 + 44), bt, font=f, fill=RED + (A,))
+
+def s_rewind(t):
+    im = BRAND.copy()
+    d = ImageDraw.Draw(im, "RGBA")
+    headline(im, [("¿En qué se me ha ido", WHITE), ("el sueldo?", PURPLE)], 90, t, 64)
+    # contador de lo gastado
+    shown = 0.0
+    for i, m in enumerate(MEM):
+        shown += -m[3] * ease((t - i * MD - 0.3) / 0.35)
+    fin = ease((t - FINAL - 0.15) / 0.6)
+    shown += (TOTAL - sum(-m[3] for m in MEM)) * fin
+    lab = "Gastado en noviembre"; fl = I("Medium", 32)
+    pa = ease((t - 0.2) / 0.4)
+    d.text(((W - d.textlength(lab, font=fl)) / 2, 268), lab, font=fl, fill=(200, 185, 240, int(255 * pa)))
+    val = eur(shown); fv = F(POP, 84 + int(16 * fin))
+    col = tuple(int(a + (b - a) * fin) for a, b in zip(WHITE, (255, 95, 120)))
+    d.text(((W - d.textlength(val, font=fv)) / 2, 306), val, font=fv, fill=col + (int(255 * pa),))
+    # montón de fotos
+    cur = min(int(t / MD), len(MEM) - 1)
+    pile = 1.0 - 0.5 * fin
+    for i, (name, fecha, que, v, rot, y0) in enumerate(MEM):
+        st = i * MD
+        if t < st: break
+        lt = t - st
+        if i < cur or t >= FINAL:
+            age = (cur - i) if t < FINAL else (len(MEM) - 1 - i)
+            card = mem_photo(name, MD, fecha, y0)
+            place(im, card, 540 - 14 * age, 1000 - 20 * age, rot, 0.96 * (1 - 0.06 * fin), (0.62 if age else 1.0) * pile)
+        else:
+            p = ease(lt / 0.4)
+            card = mem_photo(name, lt, fecha, y0)
+            place(im, card, 540 + 460 * (1 - p), 1000 + 60 * (1 - p), rot * p - 8 * (1 - p), 0.96 * (1.12 - 0.12 * p))
+            sticker(im, 1418 + 30 * (1 - ease((lt - 0.25) / 0.3)), fecha, que, v, ease((lt - 0.25) / 0.3))
+    # remate: el resto del mes
+    if t >= FINAL:
+        q = ease((t - FINAL) / 0.35)
+        pill(im, [("+ alquiler, facturas", WHITE), ("y 37 gastos más", PURPLE)], 880, t - FINAL, 62)
     return im
 
 def s_next(t):

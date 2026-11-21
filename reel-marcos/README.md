@@ -6,7 +6,8 @@ Serie «tipos de personas»: Marcos registra **por voz**. Para no repetir «Lueg
 
 ## Archivos
 
-- `reel_marcos_v2_sin_voz.mp4`: versión actual, con música y sin voz. Todos los planos son del mismo actor.
+- `reel_marcos_v3_sin_voz.mp4`: versión actual, con música y sin voz. Los recuerdos son un montón de fotos con contador.
+- `reel_marcos_v2_sin_voz.mp4`: recuerdos como rebobinado de planos al revés.
 - `reel_marcos_v1_sin_voz.mp4`: primera versión (solo la mano con el móvil y pantallas simuladas).
 - `marcos.py`: escenas, tarjetas (banco genérico, Propera) y pantallas simuladas.
 - `timeline.json`: inicio de cada escena y subtítulos (`CAPS`), que solo se dibujan con voz.
@@ -18,10 +19,10 @@ Serie «tipos de personas»: Marcos registra **por voz**. Para no repetir «Lueg
 | Clip | Uso |
 |---|---|
 | [6898111](https://www.pexels.com/video/6898111/) | Día 30: mira el móvil junto a la ventana |
-| [6898113](https://www.pexels.com/video/6898113/) | Rebobinado: desembala un pedido |
-| [6898022](https://www.pexels.com/video/6898022/) | Rebobinado: paga online con la tarjeta |
-| [6898100](https://www.pexels.com/video/6898100/) | Rebobinado: pide comida en el móvil |
-| [6898101](https://www.pexels.com/video/6898101/) | Rebobinado: recoge otro pedido de noche |
+| [6898113](https://www.pexels.com/video/6898113/) | Recuerdo: desembala un pedido |
+| [6898022](https://www.pexels.com/video/6898022/) | Recuerdo: paga online con la tarjeta |
+| [6898100](https://www.pexels.com/video/6898100/) | Recuerdo: pide comida en el móvil |
+| [6898101](https://www.pexels.com/video/6898101/) | Recuerdo: recoge otro pedido de noche |
 | [6898026](https://www.pexels.com/video/6898026/) | Fondo del día 1: sus manos con el móvil |
 | [6898016](https://www.pexels.com/video/6898016/) | Le dicta el gasto al móvil y se queda tranquilo |
 | [6898010](https://www.pexels.com/video/6898010/) | Día 30: mira el móvil y sonríe |
@@ -33,7 +34,7 @@ Crédito para el post: «Vídeos: Mikhail Nilov (Pexels)».
 | Tramo | Escena |
 |---|---|
 | 0–4,5 s | «POV: es día 30»; notificación del banco: el saldo cae a 12,40 € |
-| 4,5–10,5 s | Rebobinado de sus gastos (planos al revés): pedido 18,90 €, compra online 59,90 €, cena 24,50 €, otro pedido 32 € |
+| 4,5–10,5 s | Recuerdos: cada gasto cae como una foto (con su fecha y su importe) y el contador «Gastado en noviembre» suma: pedido 18,90 €, compra online 59,90 €, cena 24,50 €, otro pedido 32 €; remate «+ alquiler, facturas y 37 gastos más» → 1.387,60 € |
 | 10,5–13 s | «Mes siguiente. Día 1.» |
 | 13–19,5 s | Propera día 1: nómina 1.400 €, reserva alquiler, luz, internet, gimnasio y móvil → 615 € disponibles |
 | 19,5–24 s | «Y cada gasto, se lo digo»: dicta «Café, dos cincuenta» → registrado |
@@ -43,11 +44,11 @@ Crédito para el post: «Vídeos: Mikhail Nilov (Pexels)».
 ## Voz en off (pendiente)
 
 - ElevenLabs, modelo `eleven_v4`, voz **Álvaro** (`ozbKZapo4Cy6jU7KTHtp`).
-- Cada bloque empieza en su tramo; después de generarla, ajusta los tiempos de `CAPS` a la voz real.
+- Generada en una sola toma (flow de ElevenLabs `VGNZVZAYuAXeTccR7k7W`); cada bloque se coloca en su tramo y los tiempos de `CAPS` se ajustan a la voz real.
 
 ```
 [0,4–4,2 s] Día treinta. Abro el banco… doce euros.
-[4,6–10,3 s] ¿En qué se me ha ido el sueldo? Un pedido, una compra online, otra cena… ni me acuerdo.
+[4,6–10,3 s] ¿En qué se me ha ido el sueldo? Un pedido, una compra online, otra cena… y así todo el mes.
 [10,6–12,8 s] Así que el mes siguiente cambié una cosa.
 [13,1–19,3 s] El día uno, Propera reserva primero lo fijo: alquiler, luz, internet… Lo que queda es lo que tengo de verdad.
 [19,6–23,7 s] Y cada gasto se lo digo: café, dos cincuenta. Listo.
