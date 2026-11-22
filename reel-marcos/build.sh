@@ -31,12 +31,12 @@ if [ -n "$VOZ" ]; then
   [ -n "$SOLO_MEZCLA" ] || SUBS=1 python3 marcos.py work work/frames
   ffmpeg -v error -y -framerate 30 -i work/frames/%04d.png -i $MUS -i "$VOZ" \
     -filter_complex "[1:a]${MFADE}apad,volume=0.9[m];[2:a]adelay=${VOZ_DESFASE_MS:-300},apad,volume=1.6,asplit=2[v][sc];[m][sc]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=400[md];[md][v]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11,alimiter=limit=0.84:level=false[a]" \
-    -map 0:v -map "[a]" -c:v libx264 -preset veryfast -crf 20 -pix_fmt yuv420p -c:a aac -b:a 160k -t $DUR -movflags +faststart out/reel_marcos_con_voz.mp4
+    -map 0:v -map "[a]" -c:v libx264 -preset veryfast -crf 20 -pix_fmt yuv420p -c:a aac -ar 48000 -b:a 160k -t $DUR -movflags +faststart out/reel_marcos_con_voz.mp4
   echo "OK -> out/reel_marcos_con_voz.mp4"
 else
   python3 marcos.py work work/frames
   ffmpeg -v error -y -framerate 30 -i work/frames/%04d.png -i $MUS -map 0:v -map 1:a \
     -c:v libx264 -preset veryfast -crf 20 -pix_fmt yuv420p \
-    -af "${MFADE}apad" -c:a aac -b:a 160k -t $DUR -movflags +faststart out/reel_marcos_sin_voz.mp4
+    -af "${MFADE}apad" -c:a aac -ar 48000 -b:a 160k -t $DUR -movflags +faststart out/reel_marcos_sin_voz.mp4
   echo "OK -> out/reel_marcos_sin_voz.mp4"
 fi
