@@ -6,7 +6,7 @@ Estructura común, a 100 BPM (1 tiempo = 0,6 s), cuadrada con el montaje:
   29 s       golpe final en Do mayor que se apaga con el logo
 
 Uso: python3 synth.py OPCION SALIDA.wav [DURACION]
-  OPCION: a = lo-fi cálido · b = pop acústico · c = piano emotivo
+  OPCION: a = lo-fi cálido · b = pop acústico · c = piano emotivo · bf = reel «El chollo» (Black Friday)
 """
 import sys
 import numpy as np
@@ -237,14 +237,65 @@ def arr_piano():
     for n in ns: add(piano(n, 2.8, 0.7), HIT + 0.02 * ns.index(n))
     add(piano(root, 3.0, 0.8), HIT); add(piano(84, 2.5, 0.4), HIT + 0.3); add(pad(ns, 3.0, 0.8, 2000), HIT)
 
-{"a": arr_lofi, "b": arr_pop, "c": arr_piano}[OPT]()
+def arr_bf():
+    """Reel «El chollo» (Black Friday): pop de compras 0–13 s, frenazo en el giro, tensión 13–17 s, piano tranquilo y resolución en el cierre."""
+    TW, FIX, END_ = 13.0, 17.2, 29.2
+    b = 0.5  # 120 BPM
+    prog = ["C", "G", "Am", "F"]
+    hook = {"C": [79, 76, 79, 84], "G": [79, 74, 83, 81], "Am": [81, 76, 84, 83], "F": [81, 77, 84, 81]}
+    for k in range(7):  # compases de 2 s
+        t0 = k * 4 * b
+        if t0 >= TW: break
+        c = prog[k % 4]; ns, root = chord(c, 52)
+        voic = sorted(set([root + 12, root + 19] + [n + 12 for n in ns]))
+        for off, dirn in [(0, 1), (b, 1), (1.5 * b, -1), (2.5 * b, -1), (3 * b, 1), (3.5 * b, -1)]:
+            if t0 + off >= TW - 0.05: continue
+            seq = voic if dirn > 0 else voic[::-1]
+            for j, n in enumerate(seq): add(pluck(n, 0.45, 0.4, damp=0.993, bright=0.6), t0 + off + 0.01 * j, 1.0, 0.2 * dirn)
+        for j in range(4):
+            tb = t0 + j * b
+            if tb >= TW - 0.05: break
+            add(kick(0.8), tb)
+            if j % 2: add(clap(0.7), tb, 1.0, 0.05)
+            add(bass(root if j != 2 else root + 7, 0.9 * b, 0.9), tb)
+        for j in range(8):
+            if t0 + j * b / 2 < TW - 0.05: add(shaker(0.8 if j % 2 else 0.5), t0 + j * b / 2, 1.0, 0.35)
+        if k >= 1:
+            for j, n in enumerate(hook[c]):
+                tb = t0 + [0, 1, 2, 3][j] * b
+                if tb < TW - 0.1: add(bell(n, 0.35, 0.8), tb, 1.0, -0.2)
+    # frenazo de disco en el giro
+    d = 0.35; t = tt(d); f = 900 * np.exp(-t / 0.08) + 60
+    sc = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / 0.15) * 0.5
+    sc += filt(rng.standard_normal(len(t)), "bandpass", [400, 3000]) * np.exp(-t / 0.06) * 0.4
+    add(sc, TW - 0.02, 0.9)
+    # tensión: pedal grave y latido
+    add(pad([45, 52], FIX - TW - 0.4, 0.9, 500), TW + 0.4)
+    for tb in np.arange(TW + 0.6, FIX - 0.2, 1.0): add(kick(0.45), tb); add(kick(0.3), tb + 0.22)
+    # calma: piano y pad (100 BPM), resuelve en el cierre
+    bb = 0.6; prog2 = ["F", "C", "G", "Am", "F", "C", "G"]
+    for k, c in enumerate(prog2):
+        t0 = FIX + k * 4 * bb * 0.72
+        if t0 >= END_ - 0.3: break
+        ns, root = chord(c + ("add9" if c in ("C", "F") else ""), 60)
+        dur = 4 * bb * 0.72
+        add(pad(ns, dur + 0.4, 0.6, 2000), t0 - 0.1)
+        for j, n in enumerate(ns + [ns[1] + 12]):
+            add(piano(n, 0.8, 0.45), t0 + j * dur / 4, 1.0, -0.1 + 0.07 * j)
+        add(piano(root, dur, 0.6), t0, 1.0, -0.2)
+        if t0 > 23.8: add(shaker(0.4), t0 + dur / 2, 1.0, 0.3)
+    ns, root = chord("Cadd9", 60)
+    for n in ns: add(piano(n, 3.0, 0.7), END_ + 0.02 * ns.index(n))
+    add(piano(root, 3.2, 0.8), END_); add(piano(84, 2.5, 0.35), END_ + 0.3); add(pad(ns, 3.2, 0.7, 2000), END_)
+
+{"a": arr_lofi, "b": arr_pop, "c": arr_piano, "bf": arr_bf}[OPT]()
 
 # ---------- mezcla final: reverb, color, nivel ----------
 ir_len = int(1.6 * SR); ti = np.arange(ir_len) / SR
 irL = rng.standard_normal(ir_len) * np.exp(-ti / 0.45); irR = rng.standard_normal(ir_len) * np.exp(-ti / 0.45)
 irL = filt(irL, "lowpass", 6000); irR = filt(irR, "lowpass", 6000)
 irL /= np.sqrt(np.sum(irL ** 2)); irR /= np.sqrt(np.sum(irR ** 2))
-wet = {"a": 0.18, "b": 0.14, "c": 0.28}[OPT]
+wet = {"a": 0.18, "b": 0.14, "c": 0.28, "bf": 0.18}[OPT]
 L2 = L + wet * fftconvolve(L, irL)[:N]; R2 = R + wet * fftconvolve(R, irR)[:N]
 if OPT == "a":  # color lo-fi
     L2 = filt(L2, "lowpass", 9000); R2 = filt(R2, "lowpass", 9000)
