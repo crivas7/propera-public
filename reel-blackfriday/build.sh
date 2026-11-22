@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Reel «El chollo» (Black Friday). Sin voz: textos en pantalla + música original (musica/musica_bf.wav).
+# Reel «La ganga» (Black Friday). Sin voz: textos en pantalla + música original (musica/musica_bf.wav).
 #   ./build.sh                 -> out/reel_bf.mp4
 #   SOLO_TRAMOS=1 ./build.sh   -> solo prepara los fotogramas de los clips
 # La música se regenera con: python3 ../reel-marcos/musica/synth.py bf musica/musica_bf.wav 32.6

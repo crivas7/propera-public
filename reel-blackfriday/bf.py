@@ -1,4 +1,4 @@
-"""Reel «El chollo» (Black Friday). Sin voz: la historia se cuenta con textos en pantalla. 1080x1920, 30 fps.
+"""Reel «La ganga» (Black Friday). Sin voz: la historia se cuenta con textos en pantalla. 1080x1920, 30 fps.
 
 Protagonista: la chica de la sesión de Mikhail Nilov (Pexels) del mismo piso que Marcos. Es un personaje, no una clienta real.
 Uso: python3 bf.py WORK_DIR OUT_DIR    (ONLY=1.0,5.2 genera solo esos segundos)
@@ -126,7 +126,7 @@ def s_montage(t):
 def s_haul(t):
     im = clip("haul", t); scrim(im, True, 620, 170)
     counter_chip(im, "Ahorrado", eur(AHORRO), GREEN, 170, ease(t / 0.3), 1.0 + 0.12 * ease(t / 0.4))
-    pill(im, [("Me sentía", WHITE), ("la reina de los chollos.", PURPLE)], 330, t, 62, 0.4)
+    pill(im, [("Me sentía", WHITE), ("la reina de las gangas.", PURPLE)], 330, t, 62, 0.4)
     return im
 
 def s_twist(t):
@@ -188,8 +188,8 @@ def s_happy(t):
 
 def s_punch(t):
     im = BRAND.copy()
-    text_lines(im, [("Si el chollo no cabe", WHITE), ("en tu disponible real,", WHITE)], 720, t, 72, 0.1)
-    text_lines(im, [("no es un chollo.", PURPLE)], 900, t, 84, 0.7)
+    text_lines(im, [("Si la ganga no cabe", WHITE), ("en tu disponible real,", WHITE)], 720, t, 72, 0.1)
+    text_lines(im, [("no es una ganga.", PURPLE)], 900, t, 84, 0.7)
     return im
 
 def s_end(t): return END.copy()
