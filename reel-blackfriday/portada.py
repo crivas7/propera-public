@@ -1,4 +1,4 @@
-"""Portada del reel «El chollo» (Black Friday). Uso: python3 portada.py -> portada.png (1080x1920)."""
+"""Portada del reel «La ganga» (Black Friday). Uso: python3 portada.py -> portada.png (1080x1920)."""
 import os, subprocess, tempfile
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -13,7 +13,7 @@ g = Image.new("L", (1, 900))
 for y in range(900): g.putpixel((0, y), int(210 * (1 - y / 900) ** 1.5))
 im.paste(Image.new("RGB", (W, 900), NIGHT), (0, 0), g.resize((W, 900)))
 d = ImageDraw.Draw(im, "RGBA")
-for i, (s, col, size) in enumerate([("Este Black Friday", WHITE, 84), ("ahorré 120 €…", PURPLE, 96)]):
+for i, (s, col, size) in enumerate([("En el Black Friday", WHITE, 84), ("ahorré 120 €…", PURPLE, 96)]):
     f = ImageFont.truetype(POP, size); x = (W - d.textlength(s, font=f)) / 2; y = 300 + i * 104
     d.text((x + 3, y + 5), s, font=f, fill=(0, 0, 0, 110)); d.text((x, y), s, font=f, fill=col)
 txt = "¿o no?"; f = ImageFont.truetype(POP, 78); w = d.textlength(txt, font=f) + 90; cx, cy = W / 2, 1380

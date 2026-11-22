@@ -1,9 +1,9 @@
-"""Reel «La ganga» (Black Friday). Sin voz: la historia se cuenta con textos en pantalla. 1080x1920, 30 fps.
+"""Reel «La ganga» (Black Friday). Voz de la protagonista (ElevenLabs) + textos en pantalla. 1080x1920, 30 fps.
 
 Protagonista: la chica de la sesión de Mikhail Nilov (Pexels) del mismo piso que Marcos. Es un personaje, no una clienta real.
 Uso: python3 bf.py WORK_DIR OUT_DIR    (ONLY=1.0,5.2 genera solo esos segundos)
 """
-import json, os, sys
+import json, math, os, sys
 from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageChops, ImageEnhance
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -79,8 +79,15 @@ def card(im, box, a=1.0, r=40):
     d = ImageDraw.Draw(im, "RGBA"); d.rounded_rectangle(box, r, fill=(255, 255, 255, int(250 * a)))
     return d
 
+def chip_value_pos(label, value, y):
+    """Centro de la cifra del contador (destino del «+X €» que vuela desde la etiqueta)."""
+    d = ImageDraw.Draw(BRAND.copy()); fl = I("SemiBold", 32); fv = F(POP, 56)
+    lw, vw = d.textlength(label, font=fl), d.textlength(value, font=fv); w = lw + vw + 100
+    return (W - w) / 2 + 40 + lw + 20 + vw / 2, y + 48
+
 def counter_chip(im, label, value, col, y, a=1.0, scale=1.0):
     d = ImageDraw.Draw(im, "RGBA"); fl = I("SemiBold", int(32 * scale)); fv = F(POP, int(56 * scale))
+    y = y - 48 * (scale - 1)
     w = d.textlength(label, font=fl) + d.textlength(value, font=fv) + 100 * scale; h = 96 * scale
     d.rounded_rectangle(((W - w) / 2, y, (W + w) / 2, y + h), h / 2, fill=(255, 255, 255, int(245 * a)))
     x = (W - w) / 2 + 40 * scale
@@ -97,20 +104,21 @@ ITEMS = [  # (clip, artículo, precio, antes)
 AHORRO = sum(b - a for _, _, a, b in ITEMS)      # 120,00
 GASTO = sum(a for _, _, a, _ in ITEMS)          # 254,96
 DISP = 180.00                                   # disponible real hasta cobrar
-MD = 1.65                                       # duración de cada compra del montaje
 
 # ---------- escenas ----------
 def s_hook(t):
     im = clip("hook", t); scrim(im, True, 620, 170)
-    pill(im, [("Este Black Friday", WHITE), ("ahorré 120 €.", PURPLE)], 150, t, 74, 0.15)
+    pill(im, [("El Black Friday pasado", WHITE), ("ahorré 120 €.", PURPLE)], 150, t, 74, 0.15)
     return im
 
 def s_montage(t):
-    k = min(int(t / MD), len(ITEMS) - 1); lt = t - k * MD
-    name, art, price, before = ITEMS[k]
+    k = max(i for i, a in enumerate(MDS) if t >= a); lt = t - MDS[k]
+    name, art, price, before = ITEMS[k]; disc = before - price
     im = clip(name, lt); scrim(im, True, 520, 150); scrim(im, False, 700, 170)
-    saved = sum(b - a for _, _, a, b in ITEMS[:k]) + (before - price) * ease((lt - 0.35) / 0.35)
-    counter_chip(im, "Ahorrado", eur(saved), GREEN, 170)
+    prev = sum(b - a for _, _, a, b in ITEMS[:k])
+    g = ease((lt - FLY1 + 0.05) / 0.3)                       # suma al llegar el «+X €»
+    pulse = 1.0 + 0.1 * math.sin(math.pi * clamp((lt - FLY1 + 0.05) / 0.35))
+    counter_chip(im, "Ahorro total", eur(prev + disc * g), GREEN, 170, 1.0, pulse)
     p = ease(lt / 0.25); y0 = 1250 + (1 - p) * 40
     d = card(im, (110, y0, W - 110, y0 + 210), p); A = int(255 * p)
     d.text((150, y0 + 30), art, font=F(POP, 50), fill=INK + (A,))
@@ -121,24 +129,37 @@ def s_montage(t):
     tag = f"−{int(round(before - price))} €"; ft = F(POP, 44); tw = d.textlength(tag, font=ft) + 44
     d.rounded_rectangle((W - 150 - tw, y0 + 32, W - 150, y0 + 100), 34, fill=(225, 245, 232, A))
     d.text((W - 150 - tw + 22, y0 + 38), tag, font=ft, fill=GREEN + (A,))
+    if FLY0 <= lt < FLY1 + 0.05:                             # «+60 €» salta de la etiqueta al contador
+        u = clamp((lt - FLY0) / (FLY1 - FLY0)); e = u * u * (3 - 2 * u)
+        sx, sy = W - 150 - tw / 2, y0 + 66
+        ex, ey = chip_value_pos("Ahorro total", eur(prev + disc), 170)
+        x = sx + (ex - sx) * e + 90 * math.sin(math.pi * e); y = sy + (ey - sy) * e
+        sc = 1.15 - 0.4 * e; a = 1 - clamp((u - 0.8) / 0.2)
+        fp = F(POP, int(48 * sc)); s_ = f"+{int(round(disc))} €"; dd = ImageDraw.Draw(im, "RGBA")
+        bw = dd.textlength(s_, font=fp) + 40 * sc; bh = 74 * sc
+        dd.rounded_rectangle((x - bw / 2, y - bh / 2, x + bw / 2, y + bh / 2), bh / 2, fill=GREEN + (int(250 * a),))
+        dd.text((x - bw / 2 + 20 * sc, y - bh / 2 + 6 * sc), s_, font=fp, fill=WHITE + (int(255 * a),))
     return im
 
 def s_haul(t):
     im = clip("haul", t); scrim(im, True, 620, 170)
-    counter_chip(im, "Ahorrado", eur(AHORRO), GREEN, 170, ease(t / 0.3), 1.0 + 0.12 * ease(t / 0.4))
+    counter_chip(im, "Ahorro total", eur(AHORRO), GREEN, 170)   # el contador sigue igual: corte en seco
     pill(im, [("Me sentía", WHITE), ("la reina de las gangas.", PURPLE)], 330, t, 62, 0.4)
     return im
 
 def s_twist(t):
-    im = zoom(clip("twist", t), 1.55 + 0.08 * t / 4.0, 0.72, 0.58)
-    im = ImageEnhance.Color(im).enhance(0.6); scrim(im, True, 700, 190); scrim(im, False, 760, 190)
-    pill(im, [("Hasta que miré el banco.", WHITE)], 150, t, 58, 0.1)
-    f = ease((t - 1.3) / 0.4)   # el contador cambia de verde a rojo
-    if t < 1.3:
-        counter_chip(im, "Ahorrado", eur(AHORRO), GREEN, 330)
+    im = zoom(clip("twist", t), 1.55 + 0.08 * t / 7.0, 0.72, 0.66)
+    im = ImageEnhance.Color(im).enhance(0.6); scrim(im, True, 700, 190); scrim(im, False, 1000, 215)
+    f = ease((t - TW_FLIP) / 0.4)   # el contador cambia de verde a rojo
+    if t < TW_FLIP:
+        counter_chip(im, "Ahorro total", eur(AHORRO), GREEN, 170)
     else:
-        counter_chip(im, "Gastado", eur(GASTO), RED, 330, 1.0, 1.0 + 0.15 * (1 - f))
-    text_lines(im, [("No ahorré 120 €.", WHITE), ("Gasté 254,96 €.", (255, 110, 140))], 1260, t, 76, 1.8)
+        counter_chip(im, "Gastado", eur(GASTO), RED, 170, 1.0, 1.0 + 0.15 * (1 - f))
+    pill(im, [("Hasta que miré el banco.", WHITE)], 300, t, 58, 0.1)
+    text_lines(im, [("Supuestamente ahorré 120 €…", WHITE)], 1000, t, 56, TW_TXT1)
+    text_lines(im, [("pero en realidad gasté", WHITE)], 1090, t, 56, TW_FLIP)
+    text_lines(im, [("254,96 €", (255, 110, 140))], 1160, t, 112, TW_FLIP + 0.25)
+    text_lines(im, [("que no tenía planeado gastar.", WHITE)], 1300, t, 52, TW_TXT4)
     return im
 
 def s_fix(t):
@@ -146,7 +167,7 @@ def s_fix(t):
     im = ImageEnhance.Brightness(bg).enhance(0.38)
     text_lines(im, [("Este año, antes de comprar,", WHITE), ("miro lo que realmente", WHITE), ("puedo gastar.", PURPLE)], 150, t, 60, 0.1)
     # tarjeta de Propera
-    p = ease((t - 0.7) / 0.35); y0 = 560 + (1 - p) * 40
+    p = ease((t - FX_CARD) / 0.35); y0 = 560 + (1 - p) * 40
     if p > 0:
         d = card(im, (110, y0, W - 110, y0 + 250), p); A = int(255 * p)
         lg = LOGO.resize((36, 43)); im.paste(lg, (150, int(y0 + 34)), lg)
@@ -155,13 +176,13 @@ def s_fix(t):
         d.text((150, y0 + 100), "Disponible real hasta cobrar", font=I("Regular", 30), fill=GREY + (A,))
         d.text((146, y0 + 138), eur(DISP), font=I("Bold", 84), fill=PURP_D + (A,))
     # mi lista
-    q = ease((t - 1.6) / 0.35); y1 = 870 + (1 - q) * 40
+    q = ease((t - FX_LIST) / 0.35); y1 = 870 + (1 - q) * 40
     if q > 0:
         d = card(im, (110, y1, W - 110, y1 + 520), q); A = int(255 * q)
         d.text((150, y1 + 30), "Mi lista de Black Friday", font=F(POP, 40), fill=INK + (A,))
         for i, (_, art, price, _) in enumerate(ITEMS):
             yy = y1 + 112 + i * 92; ok = i == 0
-            c = ease((t - 2.4 - i * 0.55) / 0.25)
+            c = ease((t - FX_CHECK - i * FX_STEP) / 0.25)
             col = INK if (ok or c < 1) else (170, 165, 185)
             d.text((150, yy), art, font=I("Medium", 36), fill=col + (A,))
             if c >= 1 and not ok:
@@ -174,7 +195,7 @@ def s_fix(t):
                 if ok: d.line((cx - 11, cy + 1, cx - 3, cy + 10, cx + 12, cy - 9), fill=mc, width=5, joint="curve")
                 else:
                     d.line((cx - 9, cy - 9, cx + 9, cy + 9), fill=mc, width=5); d.line((cx - 9, cy + 9, cx + 9, cy - 9), fill=mc, width=5)
-        r_ = ease((t - 4.7) / 0.35)
+        r_ = ease((t - FX_MSG) / 0.35)
         if r_ > 0:
             msg = f"Me quedan {eur(DISP - ITEMS[0][2])} hasta cobrar"; fm = I("SemiBold", 32)
             d.rounded_rectangle((150, y1 + 448, W - 150, y1 + 500), 26, fill=(243, 238, 255, int(A * r_)))
@@ -188,8 +209,8 @@ def s_happy(t):
 
 def s_punch(t):
     im = BRAND.copy()
-    text_lines(im, [("Si la ganga no cabe", WHITE), ("en tu disponible real,", WHITE)], 720, t, 72, 0.1)
-    text_lines(im, [("no es una ganga.", PURPLE)], 900, t, 84, 0.7)
+    text_lines(im, [("Si la ganga no cabe", WHITE), ("en lo que realmente", WHITE), ("puedes gastar,", WHITE)], 640, t, 72, PU_1)
+    text_lines(im, [("no es una ganga.", PURPLE)], 930, t, 84, PU_2)
     return im
 
 def s_end(t): return END.copy()
@@ -199,7 +220,15 @@ SCENES = [(T["hook"], T["montage"], s_hook), (T["montage"], T["haul"], s_montage
           (T["twist"], T["fix"], s_twist), (T["fix"], T["happy"], s_fix), (T["happy"], T["punch"], s_happy),
           (T["punch"], T["end"], s_punch), (T["end"], T["DUR"], s_end)]
 XF = 0.2
-CUT = {T["twist"]}  # el giro entra en seco, sin fundido
+CUT = {T["haul"], T["twist"]}  # en seco: de la caja a abrazar la chaqueta (corte en la acción) y el giro
+
+# tiempos dentro de cada escena (s desde que empieza); timeline.json "beats" los ajusta a la voz
+BT = T.get("beats", {})
+MDS = BT.get("montage", [0.0, 1.65, 3.3, 4.95])   # entrada de cada compra
+FLY0, FLY1 = 0.45, 0.95                            # vuelo del «+X €» hasta el contador
+TW_TXT1, TW_FLIP, TW_TXT4 = BT.get("twist", [1.6, 3.6, 5.2])
+FX_CARD, FX_LIST, FX_CHECK, FX_STEP, FX_MSG = BT.get("fix", [1.8, 4.2, 4.8, 0.45, 6.3])
+PU_1, PU_2 = BT.get("punch", [0.1, 1.6])
 
 def frame(t):
     for i, (a, b, fn) in enumerate(SCENES):

@@ -239,7 +239,8 @@ def arr_piano():
 
 def arr_bf():
     """Reel «El chollo» (Black Friday): pop de compras 0–13 s, frenazo en el giro, tensión 13–17 s, piano tranquilo y resolución en el cierre."""
-    TW, FIX, END_ = 13.0, 17.2, 29.2
+    # momentos clave (giro, solución, final feliz, cierre); se pueden pasar con BF_T="giro,solucion,feliz,cierre"
+    TW, FIX, HAP, END_ = [float(x) for x in os.environ.get("BF_T", "13.0,17.2,23.8,29.2").split(",")]
     b = 0.5  # 120 BPM
     prog = ["C", "G", "Am", "F"]
     hook = {"C": [79, 76, 79, 84], "G": [79, 74, 83, 81], "Am": [81, 76, 84, 83], "F": [81, 77, 84, 81]}
@@ -274,7 +275,8 @@ def arr_bf():
     for tb in np.arange(TW + 0.6, FIX - 0.2, 1.0): add(kick(0.45), tb); add(kick(0.3), tb + 0.22)
     # calma: piano y pad (100 BPM), resuelve en el cierre
     bb = 0.6; prog2 = ["F", "C", "G", "Am", "F", "C", "G"]
-    for k, c in enumerate(prog2):
+    for k in range(64):
+        c = prog2[k % len(prog2)]
         t0 = FIX + k * 4 * bb * 0.72
         if t0 >= END_ - 0.3: break
         ns, root = chord(c + ("add9" if c in ("C", "F") else ""), 60)
@@ -283,7 +285,7 @@ def arr_bf():
         for j, n in enumerate(ns + [ns[1] + 12]):
             add(piano(n, 0.8, 0.45), t0 + j * dur / 4, 1.0, -0.1 + 0.07 * j)
         add(piano(root, dur, 0.6), t0, 1.0, -0.2)
-        if t0 > 23.8: add(shaker(0.4), t0 + dur / 2, 1.0, 0.3)
+        if t0 > HAP: add(shaker(0.4), t0 + dur / 2, 1.0, 0.3)
     ns, root = chord("Cadd9", 60)
     for n in ns: add(piano(n, 3.0, 0.7), END_ + 0.02 * ns.index(n))
     add(piano(root, 3.2, 0.8), END_); add(piano(84, 2.5, 0.35), END_ + 0.3); add(pad(ns, 3.2, 0.7, 2000), END_)
