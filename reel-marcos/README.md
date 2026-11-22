@@ -6,7 +6,8 @@ Serie «tipos de personas»: Marcos registra **por voz**. Para no repetir «Lueg
 
 ## Archivos
 
-- `reel_marcos_v7.mp4`: **versión actual** (32,2 s). Voz de Eric completa (`voz_v3.wav`), música A (lo-fi) solo desde «Mes siguiente / Día 1» (`musica/musica_a_desde_dia1.wav`), y la escena del efectivo a velocidad normal: coge el móvil de la mesa (6898019) y corte a él dictando el gasto (6898016).
+- `reel_marcos_v8.mp4`: **versión actual** (32,2 s). Igual que la v7, pero la escena del efectivo ya no tiene el plano en que coge el móvil ni el gesto de la boca al bajarlo: pantalla de Propera (pulsa el micro) → él dictando el gasto (tramo limpio de 6898016, 23,0–24,8 s) → pantalla con «Lotería de Navidad −20 € · Registrado».
+- `reel_marcos_v7.mp4`: versión anterior (32,2 s). Voz de Eric completa (`voz_v3.wav`), música A (lo-fi) solo desde «Mes siguiente / Día 1» (`musica/musica_a_desde_dia1.wav`), y la escena del efectivo a velocidad normal: coge el móvil de la mesa (6898019) y corte a él dictando el gasto (6898016).
 - `reel_marcos_v6_musica_a.mp4`, `_b`, `_c`: versión actual (32,2 s) con la voz de Eric completa (`voz_v3.wav`) y tres opciones de música original: **a** lo-fi cálido, **b** pop acústico, **c** piano emotivo.
 - `musica/synth.py`: compone las tres pistas aquí mismo, sin samples ni licencias (`python3 musica/synth.py a|b|c salida.wav 32.2`). Estructura: contenida hasta los 11 s, se abre en «Mes siguiente», golpe final a los 29 s. Las `.wav` están niveladas a −29 LUFS. `SIN_INTRO=1` (solo en la opción a) deja la música en silencio hasta los 11 s; `musica_a_desde_dia1.wav` está igualada a la opción A desde ese punto.
 - `voz_v3.wav`: locución actual = `voz_v1.mp3` (Eric) con la frase de la lotería también de Eric.
@@ -31,8 +32,7 @@ Serie «tipos de personas»: Marcos registra **por voz**. Para no repetir «Lueg
 | [6898100](https://www.pexels.com/video/6898100/) | Recuerdo: pide comida en el móvil |
 | [6898101](https://www.pexels.com/video/6898101/) | Recuerdo: recoge otro pedido de noche |
 | [6898026](https://www.pexels.com/video/6898026/) | Fondo del día 1: sus manos con el móvil |
-| [6898019](https://www.pexels.com/video/6898019/) | Coge el móvil de la mesa para decírselo a Propera |
-| [6898016](https://www.pexels.com/video/6898016/) | Le dicta el gasto al móvil y lo baja sonriendo |
+| [6898016](https://www.pexels.com/video/6898016/) | Le dicta el gasto al móvil (solo 23,0–24,8 s: al bajarlo hace un gesto con la boca que confunde) |
 | [6898010](https://www.pexels.com/video/6898010/) | Día 30: mira el móvil y sonríe |
 
 Crédito para el post: «Vídeos: Mikhail Nilov (Pexels)».

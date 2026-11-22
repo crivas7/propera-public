@@ -181,6 +181,51 @@ def day1_screen(t):
     composer(d)
     return s
 
+
+SAY = "Décimo de lotería, veinte euros"
+VA, VB = 2.65, 4.4   # pantalla de Propera | él dictando (6898016, tramo limpio) | pantalla con el registro
+TAP, DONE = 1.9, 5.38  # pulsa el micro con «se lo digo» · registrado con «Listo»
+def say_n(t): return int(clamp((t - 2.85) / 2.15) * len(SAY))
+
+def voice_screen(t):
+    s = Image.new("RGB", (SW, SH), (246, 245, 251)); d = ImageDraw.Draw(s)
+    propera_header(s, d, "12 de diciembre")
+    done = t >= DONE
+    hero(d, "Disponible real", eur(422.30 - (20 if done else 0)), "Al día", (120, 220, 150))
+    d.text((36, 420), "Hoy", font=I("SemiBold", 22), fill=INK)
+    rows = [("Supermercado", "Tarjeta · 10:12", -23.40), ("Bizum a Dani", "La cena · 9:30", -15.00)]
+    y = 458
+    if done:
+        q = ease((t - DONE) / 0.3); yy = y - (1 - q) * 20
+        rrect(d, (18, yy, SW - 18, yy + 112), 20, fill=(250, 247, 255), outline=(200, 175, 255), width=3)
+        d.text((44, yy + 18), "Lotería de Navidad", font=I("SemiBold", 24), fill=INK)
+        d.text((44, yy + 54), "Efectivo · ahora", font=I("Regular", 19), fill=(120, 115, 140))
+        v = "−20,00 €"; d.text((SW - 44 - d.textlength(v, font=I("Bold", 26)), yy + 18), v, font=I("Bold", 26), fill=RED)
+        ok = "✓ Registrado"; f2 = I("SemiBold", 17); w2 = d.textlength(ok, font=f2) + 24
+        rrect(d, (SW - 44 - w2, yy + 58, SW - 44, yy + 88), 15, fill=(225, 245, 232))
+        d.text((SW - 44 - w2 + 12, yy + 62), ok, font=f2, fill=GREEN)
+        y += 126 * q
+    for a, b, v in rows:
+        rrect(d, (18, y, SW - 18, y + 96), 20, fill=WHITE, outline=(230, 228, 238), width=2)
+        d.text((44, y + 16), a, font=I("Medium", 22), fill=(60, 55, 80))
+        d.text((44, y + 52), b, font=I("Regular", 18), fill=(140, 135, 155))
+        vt = eur(v); d.text((SW - 44 - d.textlength(vt, font=I("Medium", 22)), y + 16), vt, font=I("Medium", 22), fill=RED)
+        y += 110
+    # compositor: reposo → escuchando → transcribe → reposo
+    active = TAP <= t < DONE
+    rrect(d, (18, SH - 112, SW - 18, SH - 36), 38, outline=(160, 90, 240), width=3, fill=(250, 247, 255) if active else WHITE)
+    mic(d, 62, SH - 74, active, t)
+    if active:
+        n = say_n(t)
+        txt = SAY[:n] if n else "Escuchando…"
+        d.text((108, SH - 88), txt, font=I("Medium" if n else "Regular", 20), fill=INK if n else (120, 110, 150))
+    else:
+        d.text((108, SH - 88), "Cuéntale a Propera qué pasó", font=I("Regular", 20), fill=(150, 145, 165))
+    if TAP <= t < TAP + 0.45:  # toque en el micro
+        k = (t - TAP) / 0.45; r = 26 + 40 * k
+        d.ellipse((62 - r, SH - 74 - r, 62 + r, SH - 74 + r), outline=(160, 90, 240), width=max(1, int(6 * (1 - k))))
+    return s
+
 # ---------- tarjetas flotantes sobre vídeo ----------
 def card_base(im, box, a=1.0):
     x0, y0, x1, y1 = box
@@ -207,7 +252,7 @@ def bank_card(im, t, y=1290):
     d.text((x0 + 44, yy + 252), "Saldo disponible", font=I("Regular", 24), fill=(120, 125, 140, A))
 
 def voice_card(im, t, y=1320):
-    p = ease((t - VA) / 0.3)  # aparece con el corte al plano en que dicta
+    p = ease((t - VA) / 0.2)  # aparece con el corte al plano en que dicta
     if p <= 0: return
     yy = y + (1 - p) * 50; x0, x1 = 90, W - 90
     d = card_base(im, (x0, yy, x1, yy + 250), p); A = int(255 * p)
@@ -216,7 +261,7 @@ def voice_card(im, t, y=1320):
     done = t > 5.38
     if not done:
         mic(d, x0 + 76, int(yy + 160), True, t, 34)
-        say = "Décimo de lotería, veinte euros"; n = int(clamp((t - 2.85) / 2.15) * len(say))
+        say = SAY; n = say_n(t)
         d.text((x0 + 140, yy + 112), "Te escucho…", font=I("Regular", 26), fill=(120, 115, 140, A))
         d.text((x0 + 140, yy + 150), say[:n], font=I("SemiBold", 40), fill=INK + (A,))
     else:
@@ -354,12 +399,20 @@ def s_day1(t):
     paste_shadowed(im, phone(day1_screen(t), 1.0), (W - PW) / 2, 360 + (1 - pin) * 160)
     return im
 
-VA = 2.6   # plano 1: coge el móvil; plano 2 (corte): le dicta el gasto. Todo a velocidad normal
+_vbg = None
 def s_voice(t):
-    im = clip("voice_a", t) if t < VA else clip("voice_b", t - VA)
-    scrim(im, False, 900, 170)
-    pill(im, [("Lo que pago en efectivo,", WHITE), ("se lo digo", PURPLE)], 1010, t, 60)
-    voice_card(im, t)
+    global _vbg
+    if VA <= t < VB:  # él dictando, a velocidad normal
+        im = clip("voice_b", t - VA)
+        scrim(im, False, 900, 170)
+        voice_card(im, t)
+        return im
+    if _vbg is None:
+        _vbg = ImageEnhance.Brightness(clip("voice_b", 0.2).filter(ImageFilter.GaussianBlur(10))).enhance(0.42)
+    im = _vbg.copy()
+    headline(im, [("Lo que pago en efectivo,", WHITE), ("se lo digo", PURPLE)], 110, t, 66)
+    pin = ease(t / 0.45) if t < VA else 1.0
+    paste_shadowed(im, phone(voice_screen(t), 1.0), (W - PW) / 2, 360 + (1 - pin) * 160)
     return im
 
 def s_day30(t):
