@@ -1,17 +1,19 @@
 {
- "hook": 0.0, "rewind": 4.5, "next": 10.5, "day1": 13.0, "voice": 19.5, "day30": 24.0, "end": 27.5, "DUR": 31.0,
+ "hook": 0.0, "rewind": 4.1, "next": 11.0, "day1": 13.6, "voice": 21.0, "day30": 25.2, "end": 27.5, "DUR": 31.0,
  "CAPS": [
-  ["Día 30. Abro el banco… 12 €.", 0.4, 4.2],
-  ["¿En qué se me ha ido el sueldo?", 4.6, 6.6],
-  ["Un pedido, una compra online, otra cena…", 6.6, 8.8],
-  ["y así todo el mes.", 8.8, 10.3],
-  ["Así que el mes siguiente cambié una cosa.", 10.6, 12.8],
-  ["El día 1, Propera reserva primero lo fijo:", 13.1, 15.6],
-  ["alquiler, luz, internet…", 15.6, 17.0],
-  ["Lo que queda es lo que tengo de verdad.", 17.0, 19.3],
-  ["Y cada gasto se lo digo: café, 2,50 €.", 19.6, 22.0],
-  ["Listo.", 22.0, 23.7],
-  ["Día 30, y sin sustos.", 24.1, 27.2],
-  ["Propera. Prosperar comienza con orden.", 27.6, 30.6]
+  ["Día 30. Abro el banco…", 0.30, 2.65],
+  ["12 €.", 2.96, 3.96],
+  ["¿En qué se me ha ido el sueldo?", 4.30, 5.70],
+  ["Un pedido, una compra online, otra cena…", 6.09, 9.30],
+  ["y así todo el mes.", 9.54, 10.85],
+  ["Así que el mes siguiente cambié una cosa.", 11.21, 13.45],
+  ["El día 1, Propera reserva primero lo fijo:", 13.83, 16.50],
+  ["alquiler, luz, internet…", 16.82, 18.95],
+  ["Lo que queda es lo que tengo de verdad.", 19.19, 20.95],
+  ["Y cada gasto se lo digo:", 21.31, 22.95],
+  ["café, 2,50 €.", 23.01, 24.60],
+  ["Listo.", 24.79, 25.20],
+  ["Día 30, y sin sustos.", 25.50, 27.35],
+  ["Propera. Prosperar comienza con orden.", 27.71, 30.40]
  ]
 }

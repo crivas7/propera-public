@@ -6,12 +6,14 @@ Serie «tipos de personas»: Marcos registra **por voz**. Para no repetir «Lueg
 
 ## Archivos
 
-- `reel_marcos_v3_sin_voz.mp4`: versión actual, con música y sin voz. Los recuerdos son un montón de fotos con contador.
+- `reel_marcos_v4_con_voz.mp4`: versión actual, con voz, ducking de la música, subtítulos y volumen a −14 LUFS. Música provisional (la de siempre).
+- `voz_v1.mp3`: toma de voz elegida (ElevenLabs, flow `VGNZVZAYuAXeTccR7k7W`); se coloca con 0,3 s de desfase (`VOZ_DESFASE_MS`).
+- `reel_marcos_v3_sin_voz.mp4`: recuerdos como montón de fotos con contador, sin voz.
 - `reel_marcos_v2_sin_voz.mp4`: recuerdos como rebobinado de planos al revés.
 - `reel_marcos_v1_sin_voz.mp4`: primera versión (solo la mano con el móvil y pantallas simuladas).
 - `marcos.py`: escenas, tarjetas (banco genérico, Propera) y pantallas simuladas.
 - `timeline.json`: inicio de cada escena y subtítulos (`CAPS`), que solo se dibujan con voz.
-- `build.sh`: regenera el vídeo. `./build.sh` sin voz; `VOZ=voz.wav ./build.sh` con voz, ducking de la música y subtítulos en Poppins Bold. `SOLO_TRAMOS=1 ./build.sh` solo prepara los fotogramas de los clips.
+- `build.sh`: regenera el vídeo. `./build.sh` sin voz; `VOZ=voz_v1.mp3 ./build.sh` con voz, ducking de la música, subtítulos en Poppins Bold y normalización a −14 LUFS; `SOLO_MEZCLA=1` rehace solo el audio. `SOLO_TRAMOS=1 ./build.sh` solo prepara los fotogramas de los clips.
 - Clips en `../media/marcos/`, música de `../685446693-….mp4` y cierre de `../reel-javi/assets/end.png`.
 
 ## Clips (Pexels, Mikhail Nilov, misma sesión y mismo actor)
@@ -29,19 +31,19 @@ Serie «tipos de personas»: Marcos registra **por voz**. Para no repetir «Lueg
 
 Crédito para el post: «Vídeos: Mikhail Nilov (Pexels)».
 
-## Línea de tiempo
+## Línea de tiempo (ajustada a la voz)
 
-| Tramo | Escena |
-|---|---|
-| 0–4,5 s | «POV: es día 30»; notificación del banco: el saldo cae a 12,40 € |
-| 4,5–10,5 s | Recuerdos: cada gasto cae como una foto (con su fecha y su importe) y el contador «Gastado en noviembre» suma: pedido 18,90 €, compra online 59,90 €, cena 24,50 €, otro pedido 32 €; remate «+ alquiler, facturas y 37 gastos más» → 1.387,60 € |
-| 10,5–13 s | «Mes siguiente. Día 1.» |
-| 13–19,5 s | Propera día 1: nómina 1.400 €, reserva alquiler, luz, internet, gimnasio y móvil → 615 € disponibles |
-| 19,5–24 s | «Y cada gasto, se lo digo»: dicta «Café, dos cincuenta» → registrado |
-| 24–27,5 s | «Día 30: sin sustos»: sonríe; Propera muestra 85 € y «Cierras el mes en positivo» |
-| 27,5–31 s | Cierre de marca |
+| Tramo | Escena | Voz |
+|---|---|---|
+| 0–4,1 s | «POV: es día 30»; el saldo del banco cae a 12,40 € | Día treinta. Abro el banco… doce euros. |
+| 4,1–11 s | Recuerdos: cada gasto cae como una foto y el contador suma; remate «+ alquiler, facturas y 37 gastos más» → 1.387,60 € | ¿En qué se me ha ido el sueldo? Un pedido, una compra online, otra cena… y así todo el mes. |
+| 11–13,6 s | «Mes siguiente. Día 1.» | Así que el mes siguiente cambié una cosa. |
+| 13,6–21 s | Propera día 1: las reservas entran con «alquiler, luz, internet» → 615 € disponibles | El día uno, Propera reserva primero lo fijo… Lo que queda es lo que tengo de verdad. |
+| 21–25,2 s | Le dicta el gasto al móvil (tramo a 0,7×) → «Registrado» con «Listo» | Y cada gasto se lo digo: café, dos cincuenta. Listo. |
+| 25,2–27,5 s | «Día 30: sin sustos»; sonríe; 85 € disponibles | Día treinta, y sin sustos. |
+| 27,5–31 s | Cierre de marca | Propera. Prosperar comienza con orden. |
 
-## Voz en off (pendiente)
+## Guion de la voz
 
 - ElevenLabs, modelo `eleven_v4`, voz **Álvaro** (`ozbKZapo4Cy6jU7KTHtp`).
 - Generada en una sola toma (flow de ElevenLabs `VGNZVZAYuAXeTccR7k7W`); cada bloque se coloca en su tramo y los tiempos de `CAPS` se ajustan a la voz real.

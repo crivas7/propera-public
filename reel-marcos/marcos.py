@@ -153,11 +153,12 @@ def composer(d):
     mic(d, 62, SH - 74, False)
     d.text((108, SH - 88), "Cuéntale a Propera qué pasó", font=I("Regular", 20), fill=(150, 145, 165))
 
+RES0 = 3.1  # «alquiler» en la voz
 FIJOS = [("Alquiler", -650), ("Luz", -55), ("Internet", -30), ("Gimnasio", -35), ("Móvil", -15)]
 def day1_screen(t):
     s = Image.new("RGB", (SW, SH), (246, 245, 251)); d = ImageDraw.Draw(s)
     propera_header(s, d, "1 de diciembre · día de cobro")
-    n = sum(1 for i in range(len(FIJOS)) if t > 1.0 + i * 0.45)
+    n = sum(1 for i in range(len(FIJOS)) if t > RES0 + i * 0.45)
     val = 1400 + sum(v for _, v in FIJOS[:n]); done = n == len(FIJOS)
     hero(d, "Disponible real", eur(val), "Pagos del mes reservados" if done else "Reservando pagos fijos…",
          (120, 220, 150) if done else (160, 150, 200))
@@ -168,7 +169,7 @@ def day1_screen(t):
     v = "+1.400,00 €"; d.text((SW - 44 - d.textlength(v, font=I("Medium", 22)), y + 21), v, font=I("Medium", 22), fill=GREEN)
     y += 82
     for i, (a, b) in enumerate(FIJOS):
-        pp = ease((t - 1.0 - i * 0.45) / 0.3)
+        pp = ease((t - RES0 - i * 0.45) / 0.3)
         if pp <= 0: continue
         yy = y + (1 - pp) * 20
         rrect(d, (18, yy, SW - 18, yy + 70), 18, fill=WHITE, outline=(230, 228, 238), width=2)
@@ -200,7 +201,7 @@ def bank_card(im, t, y=1290):
     d.text((x0 + 56, yy + 46), "€", font=I("Bold", 34), fill=(255, 255, 255, A))
     d.text((x0 + 120, yy + 36), "Mi banco", font=I("SemiBold", 34), fill=(30, 40, 60, A))
     d.text((x0 + 120, yy + 78), "Cuenta corriente · 30 nov", font=I("Regular", 26), fill=(120, 125, 140, A))
-    q = ease((t - 1.0) / 1.6)
+    q = ease((t - 1.2) / 1.7)
     v = 1400 - (1400 - 12.40) * q
     d.text((x0 + 40, yy + 150), eur(v), font=I("Bold", 92), fill=((200, 40, 60) if q >= 1 else (30, 40, 60)) + (A,))
     d.text((x0 + 44, yy + 252), "Saldo disponible", font=I("Regular", 24), fill=(120, 125, 140, A))
@@ -212,14 +213,14 @@ def voice_card(im, t, y=1320):
     d = card_base(im, (x0, yy, x1, yy + 250), p); A = int(255 * p)
     lg = LOGO_S.resize((34, 41)); im.paste(lg, (x0 + 40, int(yy + 30)), lg)
     d.text((x0 + 86, yy + 28), "propera", font=F(POP, 32), fill=INK + (A,))
-    done = t > 3.0
+    done = t > 3.55
     if not done:
         mic(d, x0 + 76, int(yy + 160), True, t, 34)
-        say = "Café, dos cincuenta"; n = int(clamp((t - 0.5) / 1.6) * len(say))
+        say = "Café, dos cincuenta"; n = int(clamp((t - 2.0) / 1.4) * len(say))
         d.text((x0 + 140, yy + 112), "Te escucho…", font=I("Regular", 26), fill=(120, 115, 140, A))
         d.text((x0 + 140, yy + 150), say[:n], font=I("SemiBold", 40), fill=INK + (A,))
     else:
-        q = ease((t - 3.0) / 0.3)
+        q = ease((t - 3.55) / 0.3)
         d.text((x0 + 40, yy + 100), "Café", font=I("SemiBold", 44), fill=INK + (A,))
         d.text((x0 + 40, yy + 156), "Ocio · hoy", font=I("Regular", 26), fill=(120, 115, 140, A))
         v = "−2,50 €"; f = I("Bold", 50)
@@ -261,8 +262,8 @@ MEM = [  # carpeta, fecha, concepto, importe, giro, recorte vertical (y0 del 3:4
     ("r3", "15 nov", "Cena a domicilio", -24.50, -2.0, 300),
     ("r4", "9 nov", "Otro pedido", -32.00, 3.0, 280),
 ]
-MD = 1.2           # cada recuerdo entra cada 1,2 s
-FINAL = 4.8        # remate con el total del mes
+MEM_T = [0.4, 2.85, 4.15, 4.9]  # entrada de cada recuerdo (s desde el inicio de la escena)
+FINAL = 5.45       # remate con el total del mes («y así todo el mes»)
 TOTAL = 1400 - 12.40
 CW, CH = 720, 960  # foto 3:4
 
@@ -308,7 +309,7 @@ def s_rewind(t):
     # contador de lo gastado
     shown = 0.0
     for i, m in enumerate(MEM):
-        shown += -m[3] * ease((t - i * MD - 0.3) / 0.35)
+        shown += -m[3] * ease((t - MEM_T[i] - 0.3) / 0.35)
     fin = ease((t - FINAL - 0.15) / 0.6)
     shown += (TOTAL - sum(-m[3] for m in MEM)) * fin
     lab = "Gastado en noviembre"; fl = I("Medium", 32)
@@ -318,15 +319,15 @@ def s_rewind(t):
     col = tuple(int(a + (b - a) * fin) for a, b in zip(WHITE, (255, 95, 120)))
     d.text(((W - d.textlength(val, font=fv)) / 2, 306), val, font=fv, fill=col + (int(255 * pa),))
     # montón de fotos
-    cur = min(int(t / MD), len(MEM) - 1)
+    cur = max([i for i, st in enumerate(MEM_T) if t >= st] or [0])
     pile = 1.0 - 0.5 * fin
     for i, (name, fecha, que, v, rot, y0) in enumerate(MEM):
-        st = i * MD
+        st = MEM_T[i]
         if t < st: break
         lt = t - st
         if i < cur or t >= FINAL:
             age = (cur - i) if t < FINAL else (len(MEM) - 1 - i)
-            card = mem_photo(name, MD, fecha, y0)
+            card = mem_photo(name, (MEM_T + [FINAL])[i + 1] - st, fecha, y0)
             place(im, card, 540 - 14 * age, 1000 - 20 * age, rot, 0.96 * (1 - 0.06 * fin), (0.62 if age else 1.0) * pile)
         else:
             p = ease(lt / 0.4)
@@ -353,8 +354,9 @@ def s_day1(t):
     paste_shadowed(im, phone(day1_screen(t), 1.0), (W - PW) / 2, 360 + (1 - pin) * 160)
     return im
 
+VA = 3.43  # duración del tramo en que habla al móvil
 def s_voice(t):
-    im = clip("voice", t)
+    im = clip("voice_a", t) if t < VA else clip("voice_b", t - VA)
     scrim(im, False, 900, 170)
     pill(im, [("Y cada gasto,", WHITE), ("se lo digo", PURPLE)], 1010, t, 60)
     voice_card(im, t)
@@ -379,8 +381,8 @@ def subs(im, t):
     cue = next((c for c in T["CAPS"] if c[1] <= t < c[2]), None)
     if not cue: return im
     a = ease((t - cue[1]) / 0.12) * (1 - ease((t - (cue[2] - 0.12)) / 0.12))
-    d = ImageDraw.Draw(im, "RGBA"); f = F(POP, 50)
-    lines = wrap(d, cue[0], f, 900); lh = 64; h = len(lines) * lh + 30; y0 = 1790 - h
+    d = ImageDraw.Draw(im, "RGBA"); f = F(POP, 58)
+    lines = wrap(d, cue[0], f, 920); lh = 74; h = len(lines) * lh + 30; y0 = 1800 - h
     w = max(d.textlength(l, font=f) for l in lines) + 60
     rrect(d, ((W - w) / 2, y0, (W + w) / 2, y0 + h), 28, fill=NIGHT + (int(215 * a),))
     for i, l in enumerate(lines):
