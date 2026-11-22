@@ -6,6 +6,9 @@ Serie «tipos de personas»: Marcos registra **por voz**. Para no repetir «Lueg
 
 ## Archivos
 
+- `reel_marcos_v6_musica_a.mp4`, `_b`, `_c`: versión actual (32,2 s) con la voz de Eric completa (`voz_v3.wav`) y tres opciones de música original: **a** lo-fi cálido, **b** pop acústico, **c** piano emotivo.
+- `musica/synth.py`: compone las tres pistas aquí mismo, sin samples ni licencias (`python3 musica/synth.py a|b|c salida.wav 32.2`). Estructura: contenida hasta los 11 s, se abre en «Mes siguiente», golpe final a los 29 s. Las `.wav` están niveladas a −29 LUFS.
+- `voz_v3.wav`: locución actual = `voz_v1.mp3` (Eric) con la frase de la lotería también de Eric.
 - `reel_marcos_v5_con_voz.mp4`: versión actual (31,6 s). Toque de temporada: Black Friday en los recuerdos, gasto en efectivo (décimo de lotería) y final el 30 de diciembre. Música provisional (la de siempre).
 - `voz_v2.wav`: locución actual = `voz_v1.mp3` con la frase del café sustituida por la de la lotería (ElevenLabs, flow `VGNZVZAYuAXeTccR7k7W`); se coloca con 0,3 s de desfase (`VOZ_DESFASE_MS`).
 - `reel_marcos_v4_con_voz.mp4` / `voz_v1.mp3`: versión anterior, con «café, dos cincuenta».
@@ -14,7 +17,7 @@ Serie «tipos de personas»: Marcos registra **por voz**. Para no repetir «Lueg
 - `reel_marcos_v1_sin_voz.mp4`: primera versión (solo la mano con el móvil y pantallas simuladas).
 - `marcos.py`: escenas, tarjetas (banco genérico, Propera) y pantallas simuladas.
 - `timeline.json`: inicio de cada escena y subtítulos (`CAPS`), que solo se dibujan con voz.
-- `build.sh`: regenera el vídeo. `./build.sh` sin voz; `VOZ=voz_v2.wav ./build.sh` con voz, ducking de la música, subtítulos en Poppins Bold y normalización a −14 LUFS; `SOLO_MEZCLA=1` rehace solo el audio. `SOLO_TRAMOS=1 ./build.sh` solo prepara los fotogramas de los clips.
+- `build.sh`: regenera el vídeo. `./build.sh` sin voz; `VOZ=voz_v3.wav MUSICA=musica/musica_a.wav ./build.sh` con voz, ducking de la música, subtítulos en Poppins Bold y normalización a −14 LUFS; `SOLO_MEZCLA=1` rehace solo el audio. `SOLO_TRAMOS=1 ./build.sh` solo prepara los fotogramas de los clips.
 - Clips en `../media/marcos/`, música de `../685446693-….mp4` y cierre de `../reel-javi/assets/end.png`.
 
 ## Clips (Pexels, Mikhail Nilov, misma sesión y mismo actor)
@@ -40,9 +43,9 @@ Crédito para el post: «Vídeos: Mikhail Nilov (Pexels)».
 | 4,1–11 s | Recuerdos: cada gasto cae como una foto y el contador suma; remate «+ alquiler, facturas, el Black Friday y 36 gastos más» → 1.387,60 € | ¿En qué se me ha ido el sueldo? Un pedido, una compra online, otra cena… y así todo el mes. |
 | 11–13,6 s | «Mes siguiente. Día 1.» | Así que el mes siguiente cambié una cosa. |
 | 13,6–21 s | Propera día 1: las reservas entran con «alquiler, luz, internet» → 615 € disponibles | El día uno, Propera reserva primero lo fijo… Lo que queda es lo que tengo de verdad. |
-| 21–26,2 s | «Lo que pago en efectivo, se lo digo»: dicta el gasto al móvil (tramo a 0,625×) → «Lotería de Navidad · Efectivo · −20 €», «Registrado» con «Listo» | Y lo que pago en efectivo, se lo digo: décimo de lotería, veinte euros. Listo. |
-| 26,2–28,45 s | «30 de diciembre: sin sustos»; sonríe; 85 € disponibles | Día treinta, y sin sustos. |
-| 28,45–31,6 s | Cierre de marca | Propera. Prosperar comienza con orden. |
+| 21–26,85 s | «Lo que pago en efectivo, se lo digo»: dicta el gasto al móvil (tramo a 0,625×) → «Lotería de Navidad · Efectivo · −20 €», «Registrado» con «Listo» | Y lo que pago en efectivo, se lo digo: décimo de lotería, veinte euros. Listo. |
+| 26,85–29,1 s | «30 de diciembre: sin sustos»; sonríe; 85 € disponibles | Día treinta, y sin sustos. |
+| 29,1–32,2 s | Cierre de marca | Propera. Prosperar comienza con orden. |
 
 ## Guion de la voz
 
@@ -63,4 +66,4 @@ Crédito para el post: «Vídeos: Mikhail Nilov (Pexels)».
 
 - No prometas registro automático: Marcos dice el gasto y queda registrado. La voz se vende para lo que ningún automatismo capta (efectivo, contexto); la lectura de notificaciones tendrá su propio reel.
 - La app de banco es genérica, sin logo ni nombre de banco real; los gastos no nombran marcas de reparto.
-- Al publicar: portada obligatoria y créditos del vídeo (Pexels) y de la música en el texto del post.
+- Al publicar: portada obligatoria y créditos del vídeo (Pexels) en el texto del post. Con las pistas de `musica/` no hay que acreditar música (son originales); con la pista antigua, sí.

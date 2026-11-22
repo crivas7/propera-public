@@ -213,14 +213,14 @@ def voice_card(im, t, y=1320):
     d = card_base(im, (x0, yy, x1, yy + 250), p); A = int(255 * p)
     lg = LOGO_S.resize((34, 41)); im.paste(lg, (x0 + 40, int(yy + 30)), lg)
     d.text((x0 + 86, yy + 28), "propera", font=F(POP, 32), fill=INK + (A,))
-    done = t > 4.75
+    done = t > 5.38
     if not done:
         mic(d, x0 + 76, int(yy + 160), True, t, 34)
-        say = "Décimo de lotería, veinte euros"; n = int(clamp((t - 2.45) / 2.0) * len(say))
+        say = "Décimo de lotería, veinte euros"; n = int(clamp((t - 2.85) / 2.15) * len(say))
         d.text((x0 + 140, yy + 112), "Te escucho…", font=I("Regular", 26), fill=(120, 115, 140, A))
         d.text((x0 + 140, yy + 150), say[:n], font=I("SemiBold", 40), fill=INK + (A,))
     else:
-        q = ease((t - 4.75) / 0.3)
+        q = ease((t - 5.38) / 0.3)
         d.text((x0 + 40, yy + 100), "Lotería de Navidad", font=I("SemiBold", 44), fill=INK + (A,))
         d.text((x0 + 40, yy + 156), "Efectivo · hoy", font=I("Regular", 26), fill=(120, 115, 140, A))
         v = "−20,00 €"; f = I("Bold", 50)
@@ -354,7 +354,7 @@ def s_day1(t):
     paste_shadowed(im, phone(day1_screen(t), 1.0), (W - PW) / 2, 360 + (1 - pin) * 160)
     return im
 
-VA = 4.48  # duración del tramo en que habla al móvil (2,8 s de clip a 0,625x)
+VA = 5.35  # duración del tramo en que habla al móvil (3,3 s de clip a 0,62x)
 def s_voice(t):
     im = clip("voice_a", t) if t < VA else clip("voice_b", t - VA)
     scrim(im, False, 900, 170)

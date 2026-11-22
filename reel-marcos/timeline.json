@@ -4,9 +4,9 @@
  "next": 11.0,
  "day1": 13.6,
  "voice": 21.0,
- "day30": 26.2,
- "end": 28.45,
- "DUR": 31.6,
+ "day30": 26.85,
+ "end": 29.1,
+ "DUR": 32.2,
  "CAPS": [
   [
    "Día 30. Abro el banco…",
@@ -55,33 +55,33 @@
   ],
   [
    "Y lo que pago en efectivo,",
-   21.33,
-   22.35
+   21.35,
+   22.7
   ],
   [
    "se lo digo:",
-   22.35,
-   23.3
+   22.7,
+   23.7
   ],
   [
    "décimo de lotería, 20 €.",
-   23.48,
-   25.55
-  ],
-  [
-   "Listo.",
-   25.79,
+   23.87,
    26.2
   ],
   [
-   "Día 30, y sin sustos.",
+   "Listo.",
    26.4,
-   28.3
+   26.85
+  ],
+  [
+   "Día 30, y sin sustos.",
+   27.03,
+   28.95
   ],
   [
    "Propera. Prosperar comienza con orden.",
-   28.61,
-   31.3
+   29.24,
+   31.9
   ]
  ]
 }
