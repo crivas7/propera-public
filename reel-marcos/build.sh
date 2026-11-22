@@ -22,7 +22,7 @@ seg r2    6898022 4.0  1.7 "$(C 780)"      # recuerdo: paga online con la tarjet
 seg r3    6898100 4.0  1.7 "$V"            # recuerdo: pide comida en el móvil
 seg r4    6898101 5.0  1.7 "$V"            # recuerdo: recoge otro pedido de noche
 seg d1bg  6898026 0.3  7.6 "$(C 1150)"     # sus manos con el móvil (fondo del día 1)
-seg voice_b 6898016 23.0 1.8 "$(C 760)"           # le dicta el gasto al móvil (tramo limpio, velocidad normal)
+seg voice_b 6898016 23.0 2.1 "$(C 760)"           # le dicta el gasto al móvil (tramo limpio, velocidad normal)
 seg d30   6898010 12.2 2.6 "$(C 700)"      # día 30: mira el móvil y sonríe
 fi
 [ -n "$SOLO_TRAMOS" ] && { echo "Tramos listos en work/"; exit 0; }

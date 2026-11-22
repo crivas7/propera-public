@@ -183,8 +183,8 @@ def day1_screen(t):
 
 
 SAY = "Décimo de lotería, veinte euros"
-VA, VB = 2.65, 4.4   # pantalla de Propera | él dictando (6898016, tramo limpio) | pantalla con el registro
-TAP, DONE = 1.9, 5.38  # pulsa el micro con «se lo digo» · registrado con «Listo»
+VA, VT = 1.75, 2.3  # él dictando (6898016, tramo limpio) | zoom dentro de su móvil | pantalla de Propera
+TAP, DONE = 0.0, 5.38  # el micro ya está escuchando · registrado con «Listo»
 def say_n(t): return int(clamp((t - 2.85) / 2.15) * len(SAY))
 
 def voice_screen(t):
@@ -221,7 +221,7 @@ def voice_screen(t):
         d.text((108, SH - 88), txt, font=I("Medium" if n else "Regular", 20), fill=INK if n else (120, 110, 150))
     else:
         d.text((108, SH - 88), "Cuéntale a Propera qué pasó", font=I("Regular", 20), fill=(150, 145, 165))
-    if TAP <= t < TAP + 0.45:  # toque en el micro
+    if False:  # (toque en el micro: ya no se ve, la pantalla entra escuchando)
         k = (t - TAP) / 0.45; r = 26 + 40 * k
         d.ellipse((62 - r, SH - 74 - r, 62 + r, SH - 74 + r), outline=(160, 90, 240), width=max(1, int(6 * (1 - k))))
     return s
@@ -252,7 +252,7 @@ def bank_card(im, t, y=1290):
     d.text((x0 + 44, yy + 252), "Saldo disponible", font=I("Regular", 24), fill=(120, 125, 140, A))
 
 def voice_card(im, t, y=1320):
-    p = ease((t - VA) / 0.2)  # aparece con el corte al plano en que dicta
+    p = ease((t - 0.25) / 0.3)  # «Te escucho…» mientras dicta
     if p <= 0: return
     yy = y + (1 - p) * 50; x0, x1 = 90, W - 90
     d = card_base(im, (x0, yy, x1, yy + 250), p); A = int(255 * p)
@@ -400,20 +400,30 @@ def s_day1(t):
     return im
 
 _vbg = None
-def s_voice(t):
+PHONE_C = (0.68, 0.42)  # dónde está su móvil en el encuadre
+
+def voice_ui(t, scale=1.0):
     global _vbg
-    if VA <= t < VB:  # él dictando, a velocidad normal
-        im = clip("voice_b", t - VA)
-        scrim(im, False, 900, 170)
-        voice_card(im, t)
-        return im
     if _vbg is None:
         _vbg = ImageEnhance.Brightness(clip("voice_b", 0.2).filter(ImageFilter.GaussianBlur(10))).enhance(0.42)
     im = _vbg.copy()
-    headline(im, [("Lo que pago en efectivo,", WHITE), ("se lo digo", PURPLE)], 110, t, 66)
-    pin = ease(t / 0.45) if t < VA else 1.0
-    paste_shadowed(im, phone(voice_screen(t), 1.0), (W - PW) / 2, 360 + (1 - pin) * 160)
+    headline(im, [("Lo que pago en efectivo,", WHITE), ("se lo digo", PURPLE)], 110, max(t - VT, 0) + 0.45, 66)
+    ph = phone(voice_screen(t), scale)
+    paste_shadowed(im, ph, (W - ph.width) / 2, 360 + (PH - ph.height) / 2)
     return im
+
+def s_voice(t):
+    if t < VA:  # él dictando, a velocidad normal, con «Te escucho…»
+        im = clip("voice_b", t)
+        scrim(im, False, 900, 170)
+        voice_card(im, t)
+        return im
+    if t < VT:  # zoom dentro de su móvil, que se convierte en la pantalla de Propera
+        k = ease((t - VA) / (VT - VA))
+        a = zoom(clip("voice_b", VA - 0.02), 1.0 + 2.4 * k, *PHONE_C).filter(ImageFilter.GaussianBlur(6 * k))
+        b = voice_ui(t, 1.45 - 0.45 * k)
+        return Image.blend(a, b, k)
+    return voice_ui(t)
 
 def s_day30(t):
     im = clip("d30", t)
