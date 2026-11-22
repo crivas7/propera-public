@@ -6,7 +6,8 @@ Serie «tipos de personas»: Marcos registra **por voz**. Para no repetir «Lueg
 
 ## Archivos
 
-- `reel_marcos_v9.mp4`: **versión actual** (32,2 s). La escena del efectivo tiene un solo corte: él dictando con el móvil en la boca («Te escucho…») → zoom dentro de su móvil → pantalla de Propera que transcribe «Décimo de lotería, veinte euros» y lo registra con «Listo».
+- `reel_marcos_v10.mp4`: **versión actual** (32,2 s). Día 1 con «Primero, lo que ya tienes comprometido. / Después, lo que realmente puedes gastar.» y «comprometido» dentro de la app; subtítulos en una línea a altura fija (centro y=1545, fuera de la zona que tapa Instagram) con tarjetas y móviles por encima (≤1460); día 30 con avance temporal (12 → 30 dic, 402,30 → 85 €, +23 gastos registrados). Pendiente: cambiar en la voz «Propera reserva primero lo fijo».
+- `reel_marcos_v9.mp4`: versión anterior (32,2 s). La escena del efectivo tiene un solo corte: él dictando con el móvil en la boca («Te escucho…») → zoom dentro de su móvil → pantalla de Propera que transcribe «Décimo de lotería, veinte euros» y lo registra con «Listo».
 - `reel_marcos_v8.mp4`: versión anterior (32,2 s), con dos cortes en la escena del efectivo. Igual que la v7, pero la escena del efectivo ya no tiene el plano en que coge el móvil ni el gesto de la boca al bajarlo: pantalla de Propera (pulsa el micro) → él dictando el gasto (tramo limpio de 6898016, 23,0–24,8 s) → pantalla con «Lotería de Navidad −20 € · Registrado».
 - `reel_marcos_v7.mp4`: versión anterior (32,2 s). Voz de Eric completa (`voz_v3.wav`), música A (lo-fi) solo desde «Mes siguiente / Día 1» (`musica/musica_a_desde_dia1.wav`), y la escena del efectivo a velocidad normal: coge el móvil de la mesa (6898019) y corte a él dictando el gasto (6898016).
 - `reel_marcos_v6_musica_a.mp4`, `_b`, `_c`: versión actual (32,2 s) con la voz de Eric completa (`voz_v3.wav`) y tres opciones de música original: **a** lo-fi cálido, **b** pop acústico, **c** piano emotivo.
@@ -66,6 +67,9 @@ Crédito para el post: «Vídeos: Mikhail Nilov (Pexels)».
 ```
 
 ## Reglas
+
+- No decir que Propera «reserva» o «aparta» dinero: suena a que mueve dinero o se conecta al banco (y el cierre dice «sin conectar tu banco»). Hablar de lo «comprometido» y de lo que «realmente puedes gastar».
+- Subtítulos siempre en una línea y a la misma altura; nada del montaje por debajo de y≈1460.
 
 - No prometas registro automático: Marcos dice el gasto y queda registrado. La voz se vende para lo que ningún automatismo capta (efectivo, contexto); la lectura de notificaciones tendrá su propio reel.
 - La app de banco es genérica, sin logo ni nombre de banco real; los gastos no nombran marcas de reparto.

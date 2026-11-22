@@ -99,6 +99,7 @@ def wrap(d, text, font, width):
 
 # ---------- móvil (pantallas simuladas) ----------
 PW, PH, SW, SH = 560, 1160, 528, 1128
+PS = 0.94  # escala de los móviles: acaban en y≈1450, encima de los subtítulos
 def phone(screen, scale=1.0):
     ph = Image.new("RGBA", (PW, PH), (0, 0, 0, 0)); d = ImageDraw.Draw(ph)
     rrect(d, (0, 0, PW - 1, PH - 1), 78, fill=(28, 28, 32), outline=(70, 70, 78), width=3)
@@ -160,9 +161,9 @@ def day1_screen(t):
     propera_header(s, d, "1 de diciembre · día de cobro")
     n = sum(1 for i in range(len(FIJOS)) if t > RES0 + i * 0.45)
     val = 1400 + sum(v for _, v in FIJOS[:n]); done = n == len(FIJOS)
-    hero(d, "Disponible real", eur(val), "Pagos del mes reservados" if done else "Reservando pagos fijos…",
+    hero(d, "Disponible real", eur(val), "Lo comprometido ya está descontado" if done else "Descontando lo comprometido…",
          (120, 220, 150) if done else (160, 150, 200))
-    d.text((36, 420), "Reservado el día 1", font=I("SemiBold", 22), fill=INK)
+    d.text((36, 420), "Comprometido este mes", font=I("SemiBold", 22), fill=INK)
     y = 458
     rrect(d, (18, y, SW - 18, y + 70), 18, fill=WHITE, outline=(230, 228, 238), width=2)
     d.text((44, y + 21), "Nómina", font=I("Regular", 22), fill=(60, 55, 80))
@@ -175,8 +176,8 @@ def day1_screen(t):
         rrect(d, (18, yy, SW - 18, yy + 70), 18, fill=WHITE, outline=(230, 228, 238), width=2)
         d.text((44, yy + 21), a, font=I("Regular", 22), fill=(60, 55, 80))
         bt = eur(b); d.text((SW - 44 - d.textlength(bt, font=I("Medium", 22)), yy + 21), bt, font=I("Medium", 22), fill=RED)
-        rrect(d, (250, yy + 22, 360, yy + 48), 13, fill=(243, 238, 255))
-        d.text((262, yy + 24), "reservado", font=I("Medium", 16), fill=PURP_D)
+        rrect(d, (232, yy + 22, 368, yy + 48), 13, fill=(243, 238, 255))
+        d.text((244, yy + 24), "comprometido", font=I("Medium", 16), fill=PURP_D)
         y += 82
     composer(d)
     return s
@@ -236,7 +237,7 @@ def card_base(im, box, a=1.0):
     rrect(d, box, 40, fill=(255, 255, 255, int(248 * a)))
     return d
 
-def bank_card(im, t, y=1290):
+def bank_card(im, t, y=1150):
     """Notificación de una app de banco genérica (sin marca) el día 30."""
     p = ease((t - 0.7) / 0.4)
     if p <= 0: return
@@ -251,7 +252,7 @@ def bank_card(im, t, y=1290):
     d.text((x0 + 40, yy + 150), eur(v), font=I("Bold", 92), fill=((200, 40, 60) if q >= 1 else (30, 40, 60)) + (A,))
     d.text((x0 + 44, yy + 252), "Saldo disponible", font=I("Regular", 24), fill=(120, 125, 140, A))
 
-def voice_card(im, t, y=1320):
+def voice_card(im, t, y=1200):
     p = ease((t - 0.25) / 0.3)  # «Te escucho…» mientras dicta
     if p <= 0: return
     yy = y + (1 - p) * 50; x0, x1 = 90, W - 90
@@ -276,21 +277,28 @@ def voice_card(im, t, y=1320):
         d.text((x1 - 40 - w2 + 18, yy + 174), ok, font=f2, fill=GREEN + (int(255 * q),))
     d.text((x1 - 40 - d.textlength("12 dic", font=I("Regular", 24)), yy + 34), "12 dic", font=I("Regular", 24), fill=(150, 145, 165, A))
 
-def day30_card(im, t, y=1280):
-    p = ease((t - 0.3) / 0.4)
+def day30_card(im, t, y=1120):
+    """12 → 30 de diciembre: la fecha avanza, el disponible baja y se cuentan los gastos registrados."""
+    p = ease((t - 0.15) / 0.35)
     if p <= 0: return
     yy = y + (1 - p) * 60; x0, x1 = 110, W - 110
-    d = card_base(im, (x0, yy, x1, yy + 310), p); A = int(255 * p)
+    d = card_base(im, (x0, yy, x1, yy + 336), p); A = int(255 * p)
+    k = ease((t - 0.3) / 0.85)  # avance temporal
     lg = LOGO_S.resize((34, 41)); im.paste(lg, (x0 + 40, int(yy + 30)), lg)
     d.text((x0 + 86, yy + 28), "propera", font=F(POP, 32), fill=INK + (A,))
-    d.text((x1 - 40 - d.textlength("30 dic", font=I("Regular", 24)), yy + 34), "30 dic", font=I("Regular", 24), fill=(150, 145, 165, A))
-    d.text((x0 + 40, yy + 98), "Disponible real", font=I("Regular", 28), fill=(120, 115, 140, A))
-    d.text((x0 + 38, yy + 134), "85,00 €", font=I("Bold", 92), fill=PURP_D + (A,))
-    chip = "Cierras el mes en positivo"; f = I("SemiBold", 26)
-    w2 = d.textlength(chip, font=f) + 64
-    rrect(d, (x0 + 40, yy + 246, x0 + 40 + w2, yy + 290), 22, fill=(225, 245, 232, A))
-    d.ellipse((x0 + 58, yy + 262, x0 + 70, yy + 274), fill=(60, 180, 110, A))
-    d.text((x0 + 82, yy + 252), chip, font=f, fill=GREEN + (A,))
+    dia = f"{int(round(12 + 18 * k))} dic"; fd = I("SemiBold", 26)
+    d.text((x1 - 40 - d.textlength(dia, font=fd), yy + 32), dia, font=fd, fill=(PURP_D if k < 1 else (150, 145, 165)) + (A,))
+    d.text((x0 + 40, yy + 92), "Disponible real", font=I("Regular", 28), fill=(120, 115, 140, A))
+    d.text((x0 + 38, yy + 124), eur(402.30 - (402.30 - 85.0) * k), font=I("Bold", 88), fill=PURP_D + (A,))
+    n = int(round(23 * k))
+    d.text((x0 + 40, yy + 228), f"+{n} gastos registrados desde el 12", font=I("Medium", 24), fill=(120, 115, 140, A))
+    q = ease((t - 1.2) / 0.3)
+    if q > 0:
+        chip = "Cierras el mes en positivo"; f = I("SemiBold", 26)
+        w2 = d.textlength(chip, font=f) + 64; qa = int(255 * q * p)
+        rrect(d, (x0 + 40, yy + 270, x0 + 40 + w2, yy + 314), 22, fill=(225, 245, 232, qa))
+        d.ellipse((x0 + 58, yy + 286, x0 + 70, yy + 298), fill=(60, 180, 110, qa))
+        d.text((x0 + 82, yy + 276), chip, font=f, fill=GREEN + (qa,))
 
 # ---------- escenas ----------
 def s_hook(t):
@@ -373,12 +381,12 @@ def s_rewind(t):
         if i < cur or t >= FINAL:
             age = (cur - i) if t < FINAL else (len(MEM) - 1 - i)
             card = mem_photo(name, (MEM_T + [FINAL])[i + 1] - st, fecha, y0)
-            place(im, card, 540 - 14 * age, 1000 - 20 * age, rot, 0.96 * (1 - 0.06 * fin), (0.62 if age else 1.0) * pile)
+            place(im, card, 540 - 14 * age, 960 - 20 * age, rot, 0.96 * (1 - 0.06 * fin), (0.62 if age else 1.0) * pile)
         else:
             p = ease(lt / 0.4)
             card = mem_photo(name, lt, fecha, y0)
-            place(im, card, 540 + 460 * (1 - p), 1000 + 60 * (1 - p), rot * p - 8 * (1 - p), 0.96 * (1.12 - 0.12 * p))
-            sticker(im, 1418 + 30 * (1 - ease((lt - 0.25) / 0.3)), fecha, que, v, ease((lt - 0.25) / 0.3))
+            place(im, card, 540 + 460 * (1 - p), 960 + 60 * (1 - p), rot * p - 8 * (1 - p), 0.96 * (1.12 - 0.12 * p))
+            sticker(im, 1310 + 30 * (1 - ease((lt - 0.25) / 0.3)), fecha, que, v, ease((lt - 0.25) / 0.3))
     # remate: el resto del mes
     if t >= FINAL:
         q = ease((t - FINAL) / 0.35)
@@ -391,12 +399,24 @@ def s_next(t):
     headline(im, [("Día 1.", PURPLE)], 900, t, 96, start=0.7)
     return im
 
+def text_lines(im, lines, y, a, size, dy=0):
+    if a <= 0: return
+    d = ImageDraw.Draw(im, "RGBA"); f = F(POP, size)
+    for i, (s_, col) in enumerate(lines):
+        x = (W - d.textlength(s_, font=f)) / 2; yy = y + i * int(size * 1.18) + dy
+        d.text((x + 3, yy + 4), s_, font=f, fill=(0, 0, 0, int(90 * a)))
+        d.text((x, yy), s_, font=f, fill=col + (int(255 * a),))
+
+H1 = 5.45  # cambio de titular: «Lo que queda es lo que tengo de verdad»
 def s_day1(t):
     bg = clip("d1bg", t).filter(ImageFilter.GaussianBlur(10))
     im = ImageEnhance.Brightness(bg).enhance(0.42)
-    headline(im, [("Propera reserva", WHITE), ("lo fijo primero", PURPLE)], 110, t, 72)
+    a1 = ease(t / 0.45) * (1 - ease((t - H1) / 0.3)); a2 = ease((t - H1 - 0.1) / 0.35)
+    text_lines(im, [("Primero, lo que ya", WHITE), ("tienes comprometido.", PURPLE)], 110, a1, 62, (1 - ease(t / 0.45)) * 30)
+    text_lines(im, [("Después, lo que", WHITE), ("realmente puedes gastar.", PURPLE)], 110, a2, 62, (1 - a2) * 30)
     pin = ease(t / 0.5)
-    paste_shadowed(im, phone(day1_screen(t), 1.0), (W - PW) / 2, 360 + (1 - pin) * 160)
+    ph = phone(day1_screen(t), PS)
+    paste_shadowed(im, ph, (W - ph.width) / 2, 360 + (1 - pin) * 160)
     return im
 
 _vbg = None
@@ -408,8 +428,8 @@ def voice_ui(t, scale=1.0):
         _vbg = ImageEnhance.Brightness(clip("voice_b", 0.2).filter(ImageFilter.GaussianBlur(10))).enhance(0.42)
     im = _vbg.copy()
     headline(im, [("Lo que pago en efectivo,", WHITE), ("se lo digo", PURPLE)], 110, max(t - VT, 0) + 0.45, 66)
-    ph = phone(voice_screen(t), scale)
-    paste_shadowed(im, ph, (W - ph.width) / 2, 360 + (PH - ph.height) / 2)
+    ph = phone(voice_screen(t), PS * scale)
+    paste_shadowed(im, ph, (W - ph.width) / 2, 360 + (PH * PS - ph.height) / 2)
     return im
 
 def s_voice(t):
@@ -428,8 +448,8 @@ def s_voice(t):
 def s_day30(t):
     im = clip("d30", t)
     scrim(im, False, 900, 170)
-    pill(im, [("30 de diciembre:", WHITE), ("sin sustos", PURPLE)], 1040, t, 62)
-    day30_card(im, t, 1290)
+    pill(im, [("30 de diciembre:", WHITE), ("sin sustos", PURPLE)], 910, t, 62)
+    day30_card(im, t)
     return im
 
 def s_end(t): return END.copy()
@@ -440,16 +460,38 @@ SCENES = [(T["hook"], T["rewind"], s_hook), (T["rewind"], T["next"], s_rewind), 
           (T["end"], T["DUR"], s_end)]
 XF = 0.2
 
+SUB_Y = 1545  # centro fijo de los subtítulos
+SUB_F = 52
+CORTAS = {"lo", "la", "el", "de", "que", "y", "a", "en", "un", "una", "con", "se", "me"}  # no acabar línea en estas
+def _cues():
+    """Parte los subtítulos largos en trozos de una línea, repartiendo el tiempo por longitud."""
+    d = ImageDraw.Draw(Image.new("RGB", (8, 8))); f = F(POP, SUB_F); out = []
+    def split(text):
+        if d.textlength(text, font=f) <= 900: return [text]
+        ws = text.split(" "); best = None
+        for i in range(1, len(ws)):
+            l, r = " ".join(ws[:i]), " ".join(ws[i:])
+            if d.textlength(l, font=f) > 900 or d.textlength(r, font=f) > 900: continue
+            sc = abs(len(l) - len(r)) - (20 if l[-1] in ",:…." else 0) + (8 if ws[i - 1].lower() in CORTAS else 0)
+            if best is None or sc < best[0]: best = (sc, l, r)
+        return [best[1], best[2]] if best else wrap(d, text, f, 900)
+    for text, a, b in T["CAPS"]:
+        parts = split(text)
+        tot = sum(len(x) for x in parts); t0 = a
+        for x in parts:
+            t1 = t0 + (b - a) * len(x) / tot; out.append((x, t0, t1)); t0 = t1
+    return out
+CUES = None
 def subs(im, t):
-    cue = next((c for c in T["CAPS"] if c[1] <= t < c[2]), None)
+    global CUES
+    if CUES is None: CUES = _cues()
+    cue = next((c for c in CUES if c[1] <= t < c[2]), None)
     if not cue: return im
-    a = ease((t - cue[1]) / 0.12) * (1 - ease((t - (cue[2] - 0.12)) / 0.12))
-    d = ImageDraw.Draw(im, "RGBA"); f = F(POP, 58)
-    lines = wrap(d, cue[0], f, 920); lh = 74; h = len(lines) * lh + 30; y0 = 1800 - h
-    w = max(d.textlength(l, font=f) for l in lines) + 60
-    rrect(d, ((W - w) / 2, y0, (W + w) / 2, y0 + h), 28, fill=NIGHT + (int(215 * a),))
-    for i, l in enumerate(lines):
-        d.text(((W - d.textlength(l, font=f)) / 2, y0 + 10 + i * lh), l, font=f, fill=(255, 255, 255, int(255 * a)))
+    a = ease((t - cue[1]) / 0.1) * (1 - ease((t - (cue[2] - 0.1)) / 0.1))
+    d = ImageDraw.Draw(im, "RGBA"); f = F(POP, SUB_F)
+    w = d.textlength(cue[0], font=f) + 56; h = 88
+    rrect(d, ((W - w) / 2, SUB_Y - h / 2, (W + w) / 2, SUB_Y + h / 2), 26, fill=NIGHT + (int(215 * a),))
+    d.text(((W - d.textlength(cue[0], font=f)) / 2, SUB_Y - 38), cue[0], font=f, fill=(255, 255, 255, int(255 * a)))
     return im
 
 def frame(t):
