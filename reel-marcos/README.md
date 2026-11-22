@@ -6,8 +6,9 @@ Serie «tipos de personas»: Marcos registra **por voz**. Para no repetir «Lueg
 
 ## Archivos
 
+- `reel_marcos_v7.mp4`: **versión actual** (32,2 s). Voz de Eric completa (`voz_v3.wav`), música A (lo-fi) solo desde «Mes siguiente / Día 1» (`musica/musica_a_desde_dia1.wav`), y la escena del efectivo a velocidad normal: coge el móvil de la mesa (6898019) y corte a él dictando el gasto (6898016).
 - `reel_marcos_v6_musica_a.mp4`, `_b`, `_c`: versión actual (32,2 s) con la voz de Eric completa (`voz_v3.wav`) y tres opciones de música original: **a** lo-fi cálido, **b** pop acústico, **c** piano emotivo.
-- `musica/synth.py`: compone las tres pistas aquí mismo, sin samples ni licencias (`python3 musica/synth.py a|b|c salida.wav 32.2`). Estructura: contenida hasta los 11 s, se abre en «Mes siguiente», golpe final a los 29 s. Las `.wav` están niveladas a −29 LUFS.
+- `musica/synth.py`: compone las tres pistas aquí mismo, sin samples ni licencias (`python3 musica/synth.py a|b|c salida.wav 32.2`). Estructura: contenida hasta los 11 s, se abre en «Mes siguiente», golpe final a los 29 s. Las `.wav` están niveladas a −29 LUFS. `SIN_INTRO=1` (solo en la opción a) deja la música en silencio hasta los 11 s; `musica_a_desde_dia1.wav` está igualada a la opción A desde ese punto.
 - `voz_v3.wav`: locución actual = `voz_v1.mp3` (Eric) con la frase de la lotería también de Eric.
 - `reel_marcos_v5_con_voz.mp4`: versión actual (31,6 s). Toque de temporada: Black Friday en los recuerdos, gasto en efectivo (décimo de lotería) y final el 30 de diciembre. Música provisional (la de siempre).
 - `voz_v2.wav`: locución actual = `voz_v1.mp3` con la frase del café sustituida por la de la lotería (ElevenLabs, flow `VGNZVZAYuAXeTccR7k7W`); se coloca con 0,3 s de desfase (`VOZ_DESFASE_MS`).
@@ -17,7 +18,7 @@ Serie «tipos de personas»: Marcos registra **por voz**. Para no repetir «Lueg
 - `reel_marcos_v1_sin_voz.mp4`: primera versión (solo la mano con el móvil y pantallas simuladas).
 - `marcos.py`: escenas, tarjetas (banco genérico, Propera) y pantallas simuladas.
 - `timeline.json`: inicio de cada escena y subtítulos (`CAPS`), que solo se dibujan con voz.
-- `build.sh`: regenera el vídeo. `./build.sh` sin voz; `VOZ=voz_v3.wav MUSICA=musica/musica_a.wav ./build.sh` con voz, ducking de la música, subtítulos en Poppins Bold y normalización a −14 LUFS; `SOLO_MEZCLA=1` rehace solo el audio. `SOLO_TRAMOS=1 ./build.sh` solo prepara los fotogramas de los clips.
+- `build.sh`: regenera el vídeo. `./build.sh` sin voz; `VOZ=voz_v3.wav MUSICA=musica/musica_a_desde_dia1.wav ./build.sh` con voz, ducking de la música, subtítulos en Poppins Bold y normalización a −14 LUFS; `SOLO_MEZCLA=1` rehace solo el audio. `SOLO_TRAMOS=1 ./build.sh` solo prepara los fotogramas de los clips.
 - Clips en `../media/marcos/`, música de `../685446693-….mp4` y cierre de `../reel-javi/assets/end.png`.
 
 ## Clips (Pexels, Mikhail Nilov, misma sesión y mismo actor)
@@ -30,7 +31,8 @@ Serie «tipos de personas»: Marcos registra **por voz**. Para no repetir «Lueg
 | [6898100](https://www.pexels.com/video/6898100/) | Recuerdo: pide comida en el móvil |
 | [6898101](https://www.pexels.com/video/6898101/) | Recuerdo: recoge otro pedido de noche |
 | [6898026](https://www.pexels.com/video/6898026/) | Fondo del día 1: sus manos con el móvil |
-| [6898016](https://www.pexels.com/video/6898016/) | Le dicta el gasto al móvil y se queda tranquilo |
+| [6898019](https://www.pexels.com/video/6898019/) | Coge el móvil de la mesa para decírselo a Propera |
+| [6898016](https://www.pexels.com/video/6898016/) | Le dicta el gasto al móvil y lo baja sonriendo |
 | [6898010](https://www.pexels.com/video/6898010/) | Día 30: mira el móvil y sonríe |
 
 Crédito para el post: «Vídeos: Mikhail Nilov (Pexels)».

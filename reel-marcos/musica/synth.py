@@ -147,18 +147,22 @@ def beats(t0, t1, step=B):
         yield t; t += step
 
 # ---------- arreglos ----------
+import os
+SIN_INTRO = bool(os.environ.get("SIN_INTRO"))  # SIN_INTRO=1: la música solo entra en «Mes siguiente / Día 1»
+
 def arr_lofi():
     # intro: arpegio apagado + bajo largo; recuerdos: reloj y bombo suave
-    for i, (t0, c) in enumerate(INTRO):
+    for i, (t0, c) in enumerate([] if SIN_INTRO else INTRO):
         t1 = INTRO[i + 1][0] if i + 1 < len(INTRO) else LIFT
         ns, root = chord(c, 57)
         add(bass(root, t1 - t0, 0.7), t0)
         seq = [ns[0], ns[1], ns[2], ns[1] + 12 if len(ns) > 1 else ns[0]]
         for j, bt in enumerate(beats(max(t0, 0.2), t1, B / 2)):
             add(pluck(seq[j % 4], 0.25, 0.55, damp=0.985, bright=0.2), bt, 1.0, -0.3 + 0.2 * (j % 3))
-    for bt in beats(4.1, LIFT, B / 2): add(tick(0.35 if int(round((bt - LIFT) / (B / 2))) % 2 == 0 else 0.22), bt, 1.0, 0.35)
-    for bt in beats(6.2, LIFT, B * 2): add(kick(0.55), bt)
-    riser(9.2, LIFT, 0.8)
+    if not SIN_INTRO:
+        for bt in beats(4.1, LIFT, B / 2): add(tick(0.35 if int(round((bt - LIFT) / (B / 2))) % 2 == 0 else 0.22), bt, 1.0, 0.35)
+        for bt in beats(6.2, LIFT, B * 2): add(kick(0.55), bt)
+        riser(9.2, LIFT, 0.8)
     # groove
     for t0, c in BARS:
         ns, root = chord(c + ("maj7" if c in ("C", "F") else ("m7" if c == "Am" else "")), 60)
@@ -176,6 +180,7 @@ def arr_lofi():
     # crujido de vinilo
     cr = np.zeros(N); idx = rng.integers(0, N, int(DUR * 25)); cr[idx] = rng.uniform(-1, 1, len(idx))
     cr = filt(cr, "bandpass", [1500, 6000]) * 0.9
+    if SIN_INTRO: cr[: int(LIFT * SR)] = 0
     L[:] += cr * 0.5; R[:] += np.roll(cr, 300) * 0.5
 
 def arr_pop():

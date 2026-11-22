@@ -207,7 +207,7 @@ def bank_card(im, t, y=1290):
     d.text((x0 + 44, yy + 252), "Saldo disponible", font=I("Regular", 24), fill=(120, 125, 140, A))
 
 def voice_card(im, t, y=1320):
-    p = ease((t - 0.15) / 0.35)
+    p = ease((t - VA) / 0.3)  # aparece con el corte al plano en que dicta
     if p <= 0: return
     yy = y + (1 - p) * 50; x0, x1 = 90, W - 90
     d = card_base(im, (x0, yy, x1, yy + 250), p); A = int(255 * p)
@@ -354,7 +354,7 @@ def s_day1(t):
     paste_shadowed(im, phone(day1_screen(t), 1.0), (W - PW) / 2, 360 + (1 - pin) * 160)
     return im
 
-VA = 5.35  # duración del tramo en que habla al móvil (3,3 s de clip a 0,62x)
+VA = 2.6   # plano 1: coge el móvil; plano 2 (corte): le dicta el gasto. Todo a velocidad normal
 def s_voice(t):
     im = clip("voice_a", t) if t < VA else clip("voice_b", t - VA)
     scrim(im, False, 900, 170)
