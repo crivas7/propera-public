@@ -158,7 +158,7 @@ def s_twist(t):
     pill(im, [("Hasta que miré el banco.", WHITE)], 300, t, 58, 0.1)
     text_lines(im, [("Supuestamente ahorré 120 €…", WHITE)], 1000, t, 56, TW_TXT1)
     text_lines(im, [("pero en realidad gasté", WHITE)], 1090, t, 56, TW_FLIP)
-    text_lines(im, [("254,96 €", (255, 110, 140))], 1160, t, 112, TW_FLIP + 0.25)
+    text_lines(im, [("254,96 €", (255, 110, 140))], 1160, t, 112, TW_NUM)
     text_lines(im, [("que no tenía planeado gastar.", WHITE)], 1300, t, 52, TW_TXT4)
     return im
 
@@ -225,8 +225,8 @@ CUT = {T["haul"], T["twist"]}  # en seco: de la caja a abrazar la chaqueta (cort
 # tiempos dentro de cada escena (s desde que empieza); timeline.json "beats" los ajusta a la voz
 BT = T.get("beats", {})
 MDS = BT.get("montage", [0.0, 1.65, 3.3, 4.95])   # entrada de cada compra
-FLY0, FLY1 = 0.45, 0.95                            # vuelo del «+X €» hasta el contador
-TW_TXT1, TW_FLIP, TW_TXT4 = BT.get("twist", [1.6, 3.6, 5.2])
+FLY0, FLY1 = BT.get("fly", [0.7, 1.15])           # vuelo del «+X €» hasta el contador (llega cuando dice la cifra)
+TW_TXT1, TW_FLIP, TW_NUM, TW_TXT4 = BT.get("twist", [1.6, 3.6, 3.85, 5.2])
 FX_CARD, FX_LIST, FX_CHECK, FX_STEP, FX_MSG = BT.get("fix", [1.8, 4.2, 4.8, 0.45, 6.3])
 PU_1, PU_2 = BT.get("punch", [0.1, 1.6])
 

@@ -1,18 +1,18 @@
 # Reel «La ganga» (Black Friday)
 
-Reel vertical (1080×1920, 30 fps, ~37 s) para el lunes 23 de noviembre de 2026, semana del Black Friday (viernes 27). Lo cuenta ella con su voz (ElevenLabs) y los textos en pantalla, con música original. La protagonista es un **personaje** (no presentarla como clienta real).
+Reel vertical (1080×1920, 30 fps, 41,8 s) para el lunes 23 de noviembre de 2026, semana del Black Friday (viernes 27). Lo cuenta ella con su voz (ElevenLabs) y los textos en pantalla, con música original. La protagonista es un **personaje** (no presentarla como clienta real).
 
 La historia tiene dos momentos: **el Black Friday pasado** cayó en la trampa y **este año**, antes de comprar, mira lo que realmente puede gastar.
 
 ## Guion de la voz
 
-ElevenLabs, modelo `eleven_v4`, voz **Gala** (`Wi5NZQRxyOb3Jx4r0hrI`, joven, España):
+ElevenLabs, modelo `eleven_v4`, voz **Gala** (`Wi5NZQRxyOb3Jx4r0hrI`, joven, España). Toma elegida: `voz.mp3` (40,7 s), entra a los 0,3 s del vídeo:
 
 > [excited] El Black Friday pasado ahorré 120 €. Chaqueta: 60 € de descuento. Zapatillas: 30. Auriculares: 20. Y la freidora: 10 más. [happy] Me sentía la reina de las gangas. [pause] Hasta que miré el banco. [sighs] Supuestamente ahorré 120 €… pero en realidad gasté casi 255 € que no tenía planeado gastar. [warmly] Este año, antes de comprar, miro en Propera lo que realmente puedo gastar hasta cobrar. De mi lista… solo cabe la chaqueta. [happy] Así que me compro la chaqueta, y llego a fin de mes. Si la ganga no cabe en lo que realmente puedes gastar… no es una ganga. Pruébalo gratis en propera.life.
 
 ## Historia
 
-Tiempos de `timeline.json` (se ajustan a la voz; `beats` mueve lo que pasa dentro de cada escena).
+Tiempos de `timeline.json`, ajustados a la toma de voz: cada escena entra justo antes de su frase y `beats` mueve lo que pasa dentro (entrada de cada compra, vuelo del «+X €», frases del giro, tarjeta y lista de Propera, remate).
 
 | Escena | Qué pasa |
 |---|---|
@@ -27,7 +27,7 @@ Tiempos de `timeline.json` (se ajustan a la voz; `beats` mueve lo que pasa dentr
 
 ## Archivos
 
-- `reel_bf_v3.mp4`: textos nuevos, contador «Ahorro total» y corte en la acción, aún sin voz. `reel_bf_v2.mp4`: primera con «ganga». `reel_bf_v1.mp4`: con «chollo». `portada.png` (+ `portada.py`).
+- **`reel_bf_v4.mp4`: versión final, con la voz de ella** (`VOZ=voz.mp3 ./build.sh`; la música va más baja en el pop de compras, hasta el giro, y la voz la baja aún más mientras habla). `reel_bf_v3.mp4`: textos nuevos, contador «Ahorro total» y corte en la acción, sin voz. `reel_bf_v2.mp4`: primera con «ganga». `reel_bf_v1.mp4`: con «chollo». `portada.png` (+ `portada.py`).
 - `bf.py` (escenas), `timeline.json`, `build.sh` (`./build.sh` → `out/reel_bf.mp4`; `VOZ=voz.wav ./build.sh` mezcla la voz y baja la música mientras habla).
 - `musica/musica_bf.wav`: música original; `build.sh` la regenera con los tiempos de `timeline.json` (`BF_T=giro,solución,feliz,cierre python3 ../reel-marcos/musica/synth.py bf …`): pop de compras, frenazo en el giro, tensión y piano tranquilo que resuelve en el cierre.
 - Clips en `../media/blackfriday/` (Pexels, Mikhail Nilov, misma sesión que Marcos): 6898098, 6898105, 6898106, 6898109, 6898110, 6898112.
