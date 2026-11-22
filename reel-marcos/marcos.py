@@ -213,17 +213,17 @@ def voice_card(im, t, y=1320):
     d = card_base(im, (x0, yy, x1, yy + 250), p); A = int(255 * p)
     lg = LOGO_S.resize((34, 41)); im.paste(lg, (x0 + 40, int(yy + 30)), lg)
     d.text((x0 + 86, yy + 28), "propera", font=F(POP, 32), fill=INK + (A,))
-    done = t > 3.55
+    done = t > 4.75
     if not done:
         mic(d, x0 + 76, int(yy + 160), True, t, 34)
-        say = "Café, dos cincuenta"; n = int(clamp((t - 2.0) / 1.4) * len(say))
+        say = "Décimo de lotería, veinte euros"; n = int(clamp((t - 2.45) / 2.0) * len(say))
         d.text((x0 + 140, yy + 112), "Te escucho…", font=I("Regular", 26), fill=(120, 115, 140, A))
         d.text((x0 + 140, yy + 150), say[:n], font=I("SemiBold", 40), fill=INK + (A,))
     else:
-        q = ease((t - 3.55) / 0.3)
-        d.text((x0 + 40, yy + 100), "Café", font=I("SemiBold", 44), fill=INK + (A,))
-        d.text((x0 + 40, yy + 156), "Ocio · hoy", font=I("Regular", 26), fill=(120, 115, 140, A))
-        v = "−2,50 €"; f = I("Bold", 50)
+        q = ease((t - 4.75) / 0.3)
+        d.text((x0 + 40, yy + 100), "Lotería de Navidad", font=I("SemiBold", 44), fill=INK + (A,))
+        d.text((x0 + 40, yy + 156), "Efectivo · hoy", font=I("Regular", 26), fill=(120, 115, 140, A))
+        v = "−20,00 €"; f = I("Bold", 50)
         d.text((x1 - 40 - d.textlength(v, font=f), yy + 98), v, font=f, fill=RED + (A,))
         ok = "✓ Registrado"; f2 = I("SemiBold", 28)
         w2 = d.textlength(ok, font=f2) + 36
@@ -337,7 +337,7 @@ def s_rewind(t):
     # remate: el resto del mes
     if t >= FINAL:
         q = ease((t - FINAL) / 0.35)
-        pill(im, [("+ alquiler, facturas", WHITE), ("y 37 gastos más", PURPLE)], 880, t - FINAL, 62)
+        pill(im, [("+ alquiler, facturas,", WHITE), ("el Black Friday", WHITE), ("y 36 gastos más", PURPLE)], 840, t - FINAL, 62)
     return im
 
 def s_next(t):
@@ -354,18 +354,18 @@ def s_day1(t):
     paste_shadowed(im, phone(day1_screen(t), 1.0), (W - PW) / 2, 360 + (1 - pin) * 160)
     return im
 
-VA = 3.43  # duración del tramo en que habla al móvil
+VA = 4.48  # duración del tramo en que habla al móvil (2,8 s de clip a 0,625x)
 def s_voice(t):
     im = clip("voice_a", t) if t < VA else clip("voice_b", t - VA)
     scrim(im, False, 900, 170)
-    pill(im, [("Y cada gasto,", WHITE), ("se lo digo", PURPLE)], 1010, t, 60)
+    pill(im, [("Lo que pago en efectivo,", WHITE), ("se lo digo", PURPLE)], 1010, t, 60)
     voice_card(im, t)
     return im
 
 def s_day30(t):
     im = clip("d30", t)
     scrim(im, False, 900, 170)
-    pill(im, [("Día 30: sin sustos", WHITE)], 1110, t, 66)
+    pill(im, [("30 de diciembre:", WHITE), ("sin sustos", PURPLE)], 1040, t, 62)
     day30_card(im, t, 1290)
     return im
 

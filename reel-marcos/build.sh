@@ -4,6 +4,7 @@
 #   VOZ=voz.wav ./build.sh  -> out/reel_marcos_con_voz.mp4 (voz + ducking + subtítulos)
 set -e
 cd "$(dirname "$0")"
+DUR=$(python3 -c "import json;print(json.load(open('timeline.json'))['DUR'])")
 M=../media/marcos; MUS=../685446693-60628f34-2042-4e8a-bd58-d5e154bd5059.mp4
 V="scale=1080:1920:flags=lanczos,setsar=1"                 # clips verticales
 C() { echo "crop=608:1080:$(( $1 - 304 )):0,scale=1080:1920:flags=lanczos,setsar=1"; }  # recorte vertical de clips 16:9
@@ -19,7 +20,7 @@ seg r2    6898022 4.0  1.7 "$(C 780)"      # recuerdo: paga online con la tarjet
 seg r3    6898100 4.0  1.7 "$V"            # recuerdo: pide comida en el móvil
 seg r4    6898101 5.0  1.7 "$V"            # recuerdo: recoge otro pedido de noche
 seg d1bg  6898026 0.3  7.6 "$(C 1150)"     # sus manos con el móvil (fondo del día 1)
-seg voice_a 6898016 22.85 2.45 "$(C 760),setpts=1.4*PTS"  # le dicta el gasto al móvil (a 0,7x, dura 3,43 s)
+seg voice_a 6898016 22.5 2.8 "$(C 760),setpts=1.6*PTS"  # le dicta el gasto al móvil (a 0,625x, dura 4,48 s)
 seg voice_b 6898016 25.3 1.6 "$(C 760)"    # baja el móvil y se queda tranquilo
 seg d30   6898010 12.2 2.6 "$(C 700)"      # día 30: mira el móvil y sonríe
 fi
@@ -28,13 +29,13 @@ fi
 if [ -n "$VOZ" ]; then
   [ -n "$SOLO_MEZCLA" ] || SUBS=1 python3 marcos.py work work/frames
   ffmpeg -v error -y -framerate 30 -i work/frames/%04d.png -i $MUS -i "$VOZ" \
-    -filter_complex "[1:a]apad,volume=0.9[m];[2:a]adelay=${VOZ_DESFASE_MS:-300},apad,volume=1.6,asplit=2[v][sc];[m][sc]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=400[md];[md][v]amix=inputs=2:duration=first:normalize=0,afade=t=out:st=29:d=2,loudnorm=I=-14:TP=-1.5:LRA=11[a]" \
-    -map 0:v -map "[a]" -c:v libx264 -preset veryfast -crf 20 -pix_fmt yuv420p -c:a aac -b:a 160k -t 31 -movflags +faststart out/reel_marcos_con_voz.mp4
+    -filter_complex "[1:a]afade=t=out:st=28.8:d=1.2,apad,volume=0.9[m];[2:a]adelay=${VOZ_DESFASE_MS:-300},apad,volume=1.6,asplit=2[v][sc];[m][sc]sidechaincompress=threshold=0.03:ratio=8:attack=20:release=400[md];[md][v]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-14:TP=-1.5:LRA=11,alimiter=limit=0.84:level=false[a]" \
+    -map 0:v -map "[a]" -c:v libx264 -preset veryfast -crf 20 -pix_fmt yuv420p -c:a aac -b:a 160k -t $DUR -movflags +faststart out/reel_marcos_con_voz.mp4
   echo "OK -> out/reel_marcos_con_voz.mp4"
 else
   python3 marcos.py work work/frames
   ffmpeg -v error -y -framerate 30 -i work/frames/%04d.png -i $MUS -map 0:v -map 1:a \
     -c:v libx264 -preset veryfast -crf 20 -pix_fmt yuv420p \
-    -af "apad,afade=t=out:st=29:d=2" -c:a aac -b:a 160k -t 31 -movflags +faststart out/reel_marcos_sin_voz.mp4
+    -af "afade=t=out:st=28.8:d=1.2,apad" -c:a aac -b:a 160k -t $DUR -movflags +faststart out/reel_marcos_sin_voz.mp4
   echo "OK -> out/reel_marcos_sin_voz.mp4"
 fi
