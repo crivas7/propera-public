@@ -6,7 +6,7 @@ Estructura común, a 100 BPM (1 tiempo = 0,6 s), cuadrada con el montaje:
   29 s       golpe final en Do mayor que se apaga con el logo
 
 Uso: python3 synth.py OPCION SALIDA.wav [DURACION]
-  OPCION: a = lo-fi cálido · b = pop acústico · c = piano emotivo · bf = reel «El chollo» (Black Friday)
+  OPCION: a = lo-fi cálido · b = pop acústico · c = piano emotivo · bf = reel «La ganga» (Black Friday) · xmas = reel de los regalos
 """
 import sys
 import numpy as np
@@ -290,14 +290,74 @@ def arr_bf():
     for n in ns: add(piano(n, 3.0, 0.7), END_ + 0.02 * ns.index(n))
     add(piano(root, 3.2, 0.8), END_); add(piano(84, 2.5, 0.35), END_ + 0.3); add(pad(ns, 3.2, 0.7, 2000), END_)
 
-{"a": arr_lofi, "b": arr_pop, "c": arr_piano, "bf": arr_bf}[OPT]()
+def jingle(g=1.0):  # cascabeles de trineo: parciales metálicos agudos + ruido
+    t = tt(0.25); x = np.zeros(len(t))
+    for _ in range(7):
+        f = rng.uniform(2600, 7800); d0 = rng.uniform(0, 0.012); i0 = int(d0 * SR)
+        x[i0:] += np.sin(2 * np.pi * f * t[: len(t) - i0]) * np.exp(-t[: len(t) - i0] / rng.uniform(0.03, 0.08))
+    x += 0.6 * filt(rng.standard_normal(len(t)), "bandpass", [5000, 12000]) * np.exp(-t / 0.025)
+    return g * 0.07 * x
+
+def arr_xmas():
+    """Reel de los regalos (Black Friday + Navidad): pop navideño con cascabeles y glockenspiel; se apaga en «el año pasado»,
+    vuelve suave con Propera y estalla en el final feliz. Momentos con XM_T="año_pasado,solución,feliz,cierre"."""
+    LY, FIX, HAP, END_ = [float(x) for x in os.environ.get("XM_T", "8.6,13.0,21.0,24.0").split(",")]
+    b = 0.545  # 110 BPM
+    prog = ["C", "Am", "F", "G"]
+    mel = {"C": [76, 79, 84, 79], "Am": [76, 72, 81, 79], "F": [77, 81, 84, 81], "G": [79, 74, 83, 86]}
+    def festive(t0s, t1s, full=True):
+        k = 0
+        while True:
+            t0 = t0s + k * 4 * b
+            if t0 >= t1s - 0.05: break
+            c = prog[k % 4]; ns, root = chord(c, 55)
+            for j in range(4):
+                tb = t0 + j * b
+                if tb >= t1s - 0.05: break
+                add(bass(root if j % 2 == 0 else root + 7, 0.8 * b, 0.85), tb)
+                if full: add(kick(0.7 if j % 2 == 0 else 0.45), tb)
+                if full and j % 2: add(clap(0.45), tb, 1.0, 0.05)
+                for n in ns: add(pluck(n + 12, 0.3, 0.32, damp=0.99, bright=0.5), tb + b / 2 + 0.008 * ns.index(n), 1.0, 0.15)
+            for j in range(8):
+                tb = t0 + j * b / 2
+                if tb < t1s - 0.05: add(jingle(1.0 if j % 2 == 0 else 0.6), tb, 1.0, 0.3)
+            for j, n in enumerate(mel[c]):
+                tb = t0 + j * b
+                if tb < t1s - 0.1: add(bell(n + 12, 0.35, 0.7 if full else 0.45), tb, 1.0, -0.25)
+            k += 1
+    festive(0.0, LY)
+    # «el año pasado»: la música se desinfla (tono que cae) y queda un pad menor con piano lento
+    d = 0.6; t = tt(d); f = 520 * np.exp(-t / 0.25) + 90
+    add(np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / 0.3) * 0.25, LY - 0.05, 0.8)
+    add(pad([57, 60, 64], FIX - LY - 0.2, 0.9, 700), LY + 0.2)
+    for i, m in enumerate([69, 67, 64, 65, 64]):
+        tp = LY + 0.6 + i * 0.9
+        if tp < FIX - 0.3: add(piano(m, 0.8, 0.45), tp, 1.0, 0.1)
+    # Propera: vuelve suave (piano y campanitas, sin batería)
+    k = 0
+    while FIX + k * 4 * b < HAP - 0.05:
+        t0 = FIX + k * 4 * b; c = prog[k % 4]; ns, root = chord(c + ("add9" if c in ("C", "F") else ""), 60)
+        add(pad(ns, 4 * b + 0.3, 0.6, 1800), t0 - 0.1); add(piano(root - 12, 4 * b, 0.55), t0, 1.0, -0.2)
+        for j in range(4):
+            if t0 + j * b < HAP - 0.05:
+                for n in ns: add(piano(n, 0.45, 0.35), t0 + j * b + 0.01 * ns.index(n), 1.0, -0.1)
+                add(jingle(0.35), t0 + j * b, 1.0, 0.3)
+        k += 1
+    riser(max(FIX, HAP - 1.6), HAP, 0.5)
+    festive(HAP, END_)
+    ns, root = chord("Cadd9", 60)
+    for n in ns: add(piano(n, 3.0, 0.7), END_ + 0.02 * ns.index(n))
+    add(bell(96, 2.5, 0.7), END_ + 0.05); add(bass(root, 2.5, 0.8), END_); add(kick(0.6), END_)
+    for j in range(6): add(jingle(0.8 - 0.12 * j), END_ + j * b / 2, 1.0, 0.3)
+
+{"a": arr_lofi, "b": arr_pop, "c": arr_piano, "bf": arr_bf, "xmas": arr_xmas}[OPT]()
 
 # ---------- mezcla final: reverb, color, nivel ----------
 ir_len = int(1.6 * SR); ti = np.arange(ir_len) / SR
 irL = rng.standard_normal(ir_len) * np.exp(-ti / 0.45); irR = rng.standard_normal(ir_len) * np.exp(-ti / 0.45)
 irL = filt(irL, "lowpass", 6000); irR = filt(irR, "lowpass", 6000)
 irL /= np.sqrt(np.sum(irL ** 2)); irR /= np.sqrt(np.sum(irR ** 2))
-wet = {"a": 0.18, "b": 0.14, "c": 0.28, "bf": 0.18}[OPT]
+wet = {"a": 0.18, "b": 0.14, "c": 0.28, "bf": 0.18, "xmas": 0.16}[OPT]
 L2 = L + wet * fftconvolve(L, irL)[:N]; R2 = R + wet * fftconvolve(R, irR)[:N]
 if OPT == "a":  # color lo-fi
     L2 = filt(L2, "lowpass", 9000); R2 = filt(R2, "lowpass", 9000)
