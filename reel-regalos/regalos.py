@@ -110,17 +110,18 @@ def s_hook(t):
     return im
 
 def s_list(t):
-    im = clip("list1" if t < LI_SWITCH else "list2", t if t < LI_SWITCH else t - LI_SWITCH)
+    if t < LI_SWITCH: im = zoom(clip("list1", t), LI_ZOOM[0], LI_ZOOM[1], LI_ZOOM[2])   # plano más cerrado que el gancho; la lista no le tapa la cara
+    else: im = clip("list2", t - LI_SWITCH)
     scrim(im, True, 520, 160); scrim(im, False, 1100, 190)
     n_in = [ease((t - s) / 0.3) for s in LI_ITEMS]
     total = sum(p * ease((t - s - 0.15) / 0.35) for (_, p), s in zip(ITEMS, LI_ITEMS))
     pulse = 1.0 + 0.06 * max([math.sin(math.pi * clamp((t - s - 0.15) / 0.35)) for s in LI_ITEMS] + [0])
     counter_chip(im, "Total", eur(total), INK, 170, 1.0, pulse)
-    y0 = 1000; d = card(im, (110, y0, W - 110, y0 + 450), 1.0)
+    y0 = 1050; d = card(im, (110, y0, W - 110, y0 + 430), 1.0)
     d.text((150, y0 + 30), "Regalos de Navidad", font=F(POP, 40), fill=INK + (255,))
     for i, ((name, p), q) in enumerate(zip(ITEMS, n_in)):
         if q <= 0: continue
-        yy = y0 + 108 + i * 64 + (1 - q) * 18; A = int(255 * q); cap = i == len(ITEMS) - 1
+        yy = y0 + 104 + i * 62 + (1 - q) * 18; A = int(255 * q); cap = i == len(ITEMS) - 1
         col = PURP_D if cap else INK
         d.text((150, yy), name, font=I("SemiBold" if cap else "Medium", 34), fill=col + (A,))
         pt = eur(p); d.text((W - 150 - d.textlength(pt, font=I("Medium", 34)), yy), pt, font=I("Medium", 34), fill=col + (A,))
@@ -129,7 +130,7 @@ def s_list(t):
 def s_lastyear(t):
     name, lt = ("ly1", t) if t < LY_SWITCH else ("ly2", t - LY_SWITCH)
     im = ImageEnhance.Color(clip(name, lt)).enhance(0.35); im = ImageEnhance.Brightness(im).enhance(0.9)
-    scrim(im, True, 520, 170); scrim(im, False, 1000, 215)
+    scrim(im, True, 520, 170); scrim(im, False, 1100, 235)
     pill(im, [("El año pasado", WHITE)], 170, t, 54, 0.05)
     text_lines(im, [("hice lo mismo…", WHITE)], 1060, t, 62, LY_T1)
     text_lines(im, [("y llegué a enero", WHITE)], 1160, t, 62, LY_T2)
@@ -187,7 +188,8 @@ XF = 0.2
 CUT = {T["lastyear"]}  # «el año pasado» entra en seco
 
 BT = T.get("beats", {})
-LI_SWITCH = BT.get("list_switch", 2.6)                       # cambio de plano dentro de la lista
+LI_SWITCH = BT.get("list_switch", 2.6)                       # cambio de plano dentro de la lista (99 = un solo plano)
+LI_ZOOM = BT.get("list_zoom", [1.45, 0.5, 0.58])              # zoom, centro x, centro y del plano de la lista
 LI_ITEMS = BT.get("list_items", [0.3, 1.1, 1.9, 2.8, 3.9])  # entrada de cada regalo (cuando lo nombra)
 LY_SWITCH, LY_T1, LY_T2 = BT.get("lastyear", [1.6, 0.6, 1.9])
 FX_CARD, FX_LIST, FX_CHECK, FX_STEP, FX_CAP, FX_MSG = BT.get("fix", [2.3, 4.4, 4.6, 0.3, 6.0, 6.7])

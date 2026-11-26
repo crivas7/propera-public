@@ -6,7 +6,7 @@ Estructura común, a 100 BPM (1 tiempo = 0,6 s), cuadrada con el montaje:
   29 s       golpe final en Do mayor que se apaga con el logo
 
 Uso: python3 synth.py OPCION SALIDA.wav [DURACION]
-  OPCION: a = lo-fi cálido · b = pop acústico · c = piano emotivo · bf = reel «La ganga» (Black Friday) · xmas = reel de los regalos
+  OPCION: a = lo-fi cálido · b = pop acústico · c = piano emotivo · bf = reel «La ganga» (Black Friday) · xmas / xmas_lofi / xmas_swing = reel de los regalos
 """
 import sys
 import numpy as np
@@ -350,16 +350,95 @@ def arr_xmas():
     add(bell(96, 2.5, 0.7), END_ + 0.05); add(bass(root, 2.5, 0.8), END_); add(kick(0.6), END_)
     for j in range(6): add(jingle(0.8 - 0.12 * j), END_ + j * b / 2, 1.0, 0.3)
 
-{"a": arr_lofi, "b": arr_pop, "c": arr_piano, "bf": arr_bf, "xmas": arr_xmas}[OPT]()
+def celesta(m, d, g=1.0):  # celesta / caja de música: brillante y corta
+    t = tt(d + 1.2); f = mtof(m)
+    x = np.sin(2 * np.pi * f * t) + 0.5 * np.sin(2 * np.pi * 2 * f * t) * np.exp(-t / 0.25) + 0.2 * np.sin(2 * np.pi * 4.07 * f * t) * np.exp(-t / 0.08)
+    return g * 0.15 * x * np.minimum(1, t / 0.002) * np.exp(-t / 0.7)
+
+def _xm_times():
+    return [float(x) for x in os.environ.get("XM_T", "8.6,13.0,21.0,24.0").split(",")]
+
+def arr_xmas_lofi():
+    """Navidad lo-fi: piano eléctrico cálido, celesta, cascabeles suaves y crujido de vinilo (85 BPM)."""
+    LY, FIX, HAP, END_ = _xm_times(); b = 0.706
+    prog = ["Cmaj7", "Am7", "Fmaj7", "G7"]
+    mel = {"Cmaj7": [79, 76, 72, 74], "Am7": [76, 72, 69, 72], "Fmaj7": [77, 81, 76, 74], "G7": [74, 77, 79, 71]}
+    def groove(t0s, t1s, drums=True, g=1.0):
+        k = 0
+        while t0s + k * 4 * b < t1s - 0.05:
+            t0 = t0s + k * 4 * b; c = prog[k % 4]; ns, root = chord(c, 60)
+            for off, ln in [(0, 1.3), (2 * b, 1.0), (3.5 * b, 0.4)]:
+                if t0 + off < t1s - 0.1:
+                    for n in ns: add(ep(n, ln, 0.8 * g), t0 + off + 0.014 * ns.index(n), 1.0, -0.15)
+            add(bass(root, 1.5 * b, 0.9 * g), t0); add(bass(root + 7, 0.9 * b, 0.7 * g), t0 + 2.5 * b)
+            if drums:
+                add(kick(0.7), t0); add(kick(0.5), t0 + 2.5 * b); add(snare(0.4), t0 + b); add(snare(0.4), t0 + 3 * b)
+                for j in range(8): add(hat(0.4 if j % 2 == 0 else 0.25), t0 + j * b / 2 + (0.07 * b if j % 2 else 0), 1.0, 0.25)
+            for j in range(4): add(jingle(0.45 * g), t0 + (j + 0.5) * b, 1.0, 0.3)
+            for j, n in enumerate(mel[c]):
+                tb = t0 + [0, 1, 2, 3][j] * b
+                if tb < t1s - 0.1: add(celesta(n + 12, 0.4, 0.8 * g), tb, 1.0, -0.25)
+            k += 1
+    groove(0.0, LY)
+    add(pad([57, 60, 64], FIX - LY - 0.2, 0.9, 700), LY + 0.2)
+    for i, m in enumerate([69, 67, 64, 65, 64]):
+        tp = LY + 0.6 + i * 0.9
+        if tp < FIX - 0.3: add(piano(m, 0.8, 0.45), tp, 1.0, 0.1)
+    groove(FIX, HAP, drums=False, g=0.7)
+    groove(HAP, END_)
+    ns, root = chord("Cmaj9", 60)
+    for n in ns: add(ep(n, 2.8, 0.9), END_ + 0.015 * ns.index(n))
+    add(celesta(96, 2.0, 0.8), END_ + 0.1); add(bass(root, 2.5, 0.8), END_); add(kick(0.6), END_)
+    cr = np.zeros(N); idx = rng.integers(0, N, int(DUR * 20)); cr[idx] = rng.uniform(-1, 1, len(idx))
+    cr = filt(cr, "bandpass", [1500, 6000]) * 0.7; L[:] += cr * 0.45; R[:] += np.roll(cr, 300) * 0.45
+
+def arr_xmas_swing():
+    """Navidad swing: contrabajo caminando, escobillas, piano de jazz y celesta (120 BPM con swing)."""
+    LY, FIX, HAP, END_ = _xm_times(); b = 0.5
+    prog = [("Cmaj7", 48), ("Am7", 45), ("Dm7", 50), ("G7", 43)]
+    walk = {"Cmaj7": [48, 52, 55, 57], "Am7": [45, 48, 52, 50], "Dm7": [50, 53, 57, 55], "G7": [43, 47, 50, 49]}
+    mel = {"Cmaj7": [76, 79, 81, 79], "Am7": [76, 72, 74, 76], "Dm7": [77, 74, 72, 74], "G7": [71, 74, 77, 79]}
+    def sw(j): return j * b / 2 + (0.08 if j % 2 else 0)
+    def groove(t0s, t1s, full=True, g=1.0):
+        k = 0
+        while t0s + k * 4 * b < t1s - 0.05:
+            t0 = t0s + k * 4 * b; c, _ = prog[k % 4]; ns, root = chord(c, 60)
+            for j, m in enumerate(walk[c]):
+                if t0 + j * b < t1s - 0.05: add(pluck(m - 12, 0.45, 0.9 * g, damp=0.985, bright=0.1), t0 + j * b, 1.0, -0.1)
+            for off in ([b * 0.0, 1.5 * b + 0.08, 3 * b] if full else [0.0, 2 * b]):
+                if t0 + off < t1s - 0.1:
+                    for n in ns: add(piano(n, 0.35, 0.45 * g), t0 + off + 0.01 * ns.index(n), 1.0, 0.1)
+            if full:
+                for j in range(8): add(shaker(0.7 if j % 2 == 0 else 0.45), t0 + sw(j), 1.0, 0.3)
+                add(kick(0.45), t0); add(kick(0.35), t0 + 2 * b); add(snare(0.18), t0 + b); add(snare(0.18), t0 + 3 * b)
+                for j in range(4): add(jingle(0.4), t0 + j * b + 0.08, 1.0, 0.35)
+            for j, n in enumerate(mel[c]):
+                tb = t0 + sw(j * 2 if j < 2 else j * 2 - 1)
+                if tb < t1s - 0.1: add(celesta(n + 12, 0.35, 0.7 * g), tb, 1.0, -0.25)
+            k += 1
+    groove(0.0, LY)
+    d = 0.6; t = tt(d); f = 520 * np.exp(-t / 0.25) + 90
+    add(np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / 0.3) * 0.25, LY - 0.05, 0.8)
+    add(pad([57, 60, 64], FIX - LY - 0.2, 0.9, 700), LY + 0.2)
+    for i, m in enumerate([69, 67, 64, 65, 64]):
+        tp = LY + 0.6 + i * 0.9
+        if tp < FIX - 0.3: add(piano(m, 0.8, 0.45), tp, 1.0, 0.1)
+    groove(FIX, HAP, full=False, g=0.75)
+    groove(HAP, END_)
+    ns, root = chord("Cmaj9", 60)
+    for n in ns: add(piano(n, 3.0, 0.7), END_ + 0.03 * ns.index(n))
+    add(pluck(36, 2.0, 0.9, damp=0.995, bright=0.1), END_); add(celesta(96, 2.0, 0.8), END_ + 0.15); add(kick(0.5), END_)
+
+{"a": arr_lofi, "b": arr_pop, "c": arr_piano, "bf": arr_bf, "xmas": arr_xmas, "xmas_lofi": arr_xmas_lofi, "xmas_swing": arr_xmas_swing}[OPT]()
 
 # ---------- mezcla final: reverb, color, nivel ----------
 ir_len = int(1.6 * SR); ti = np.arange(ir_len) / SR
 irL = rng.standard_normal(ir_len) * np.exp(-ti / 0.45); irR = rng.standard_normal(ir_len) * np.exp(-ti / 0.45)
 irL = filt(irL, "lowpass", 6000); irR = filt(irR, "lowpass", 6000)
 irL /= np.sqrt(np.sum(irL ** 2)); irR /= np.sqrt(np.sum(irR ** 2))
-wet = {"a": 0.18, "b": 0.14, "c": 0.28, "bf": 0.18, "xmas": 0.16}[OPT]
+wet = {"a": 0.18, "b": 0.14, "c": 0.28, "bf": 0.18, "xmas": 0.16, "xmas_lofi": 0.2, "xmas_swing": 0.2}[OPT]
 L2 = L + wet * fftconvolve(L, irL)[:N]; R2 = R + wet * fftconvolve(R, irR)[:N]
-if OPT == "a":  # color lo-fi
+if OPT in ("a", "xmas_lofi"):  # color lo-fi
     L2 = filt(L2, "lowpass", 9000); R2 = filt(R2, "lowpass", 9000)
 L2 = filt(L2, "highpass", 30); R2 = filt(R2, "highpass", 30)
 fade = np.ones(N); fl = int(0.25 * SR); fade[-fl:] = np.linspace(1, 0, fl)
