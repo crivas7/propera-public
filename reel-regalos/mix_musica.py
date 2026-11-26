@@ -25,6 +25,7 @@ def ramp(a, b, d=0.25):  # 0 antes de a, 1 después de a+d ... (suave)
     return np.clip((t - a) / d, 0, 1)
 
 db = np.full(N, 3.0)                                   # gancho y lista: +3 dB
+db += -12.0 * (1 - ramp(T["list"] - 0.6, T["list"] + 0.2))   # primera frase («Hoy es Black Friday…»): música muy baja para que la voz suene limpia
 ly, fx, hp, en = T["lastyear"], T["fix"], T["happy"], T["end"]
 db += (-17.0 - 3.0) * ramp(ly - 0.05, ly + 0.25)        # el año pasado: muy baja
 db += (-5.0 + 17.0) * ramp(fx - 0.2, fx + 0.6)          # Propera: vuelve contenida
