@@ -30,5 +30,6 @@ ElevenLabs, modelo `eleven_v4`, voz **Silvia Expresiva** (`DNtbMnLZ43q8pReedyYw`
 
 ## Reglas
 
-- Créditos al publicar: autor de los vídeos (por confirmar en Pexels; las fotos de la misma sesión son de **Leeloo The First**) · Música: ElevenLabs · «Historia ficticia, interpretada por actores».
+- Portada: `portada.png` (`portada.py`): «Regalos de Navidad en el Black Friday…» + «¿y en enero?».
+- Créditos al publicar: Vídeos: **Leeloo The First** (Pexels; misma sesión que sus fotos 6173332–6173354) · Música: ElevenLabs · «Historia ficticia, interpretada por actores».
 - No decir que Propera «reserva» dinero; hablar de lo que realmente puedes gastar.
