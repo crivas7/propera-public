@@ -129,12 +129,13 @@ def s_list(t):
 
 def s_lastyear(t):
     name, lt = ("ly1", t) if t < LY_SWITCH else ("ly2", t - LY_SWITCH)
-    im = ImageEnhance.Color(clip(name, lt)).enhance(0.35); im = ImageEnhance.Brightness(im).enhance(0.9)
-    scrim(im, True, 520, 170); scrim(im, False, 1100, 235)
+    im = clip(name, lt)   # a todo color: el bajón lo cuentan la voz, la música y los textos
+    scrim(im, True, 420, 120)
     pill(im, [("El año pasado", WHITE)], 170, t, 54, 0.05)
-    text_lines(im, [("hice lo mismo…", WHITE)], 1060, t, 62, LY_T1)
-    text_lines(im, [("y llegué a enero", WHITE)], 1160, t, 62, LY_T2)
-    text_lines(im, [("sin un euro.", SOFT_RED)], 1240, t, 96, LY_T2 + 0.3)
+    if t < LY_T2:
+        pill(im, [("hice lo mismo…", WHITE)], 1220, t, 62, LY_T1)
+    else:
+        pill(im, [("y llegué a enero", WHITE), ("sin un euro.", SOFT_RED)], 1160, t, 64, LY_T2)
     return im
 
 def s_fix(t):
